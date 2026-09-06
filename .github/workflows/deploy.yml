@@ -1,38 +1,44 @@
 name: Deploy Flutter Web to GitHub Pages
 
+# Собирает веб-версию приложения и публикует на GitHub Pages при каждом
+# пуше в main. Адрес бэкенда берётся из репозиторного секрета BACKEND_URL
+# (Settings → Secrets and variables → Actions → New repository secret).
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
 
-      - name: Install dependencies
-        uses: subosito/flutter-action@v2
+      - run: flutter pub get
+
+      - name: Build web (with backend URL baked in)
+        run: |
+          flutter build web --release \
+            --dart-define=BACKEND_URL=${{ secrets.BACKEND_URL }} \
+            --base-href /${{ github.event.repository.name }}/
+
+      - uses: actions/upload-pages-artifact@v3
         with:
-          flutter-version: '3.x'
+          path: build/web
 
-      - name: Get pub dependencies
-        run: flutter pub get
-
-      - name: Build Web App
-        run: flutter build web --release --base-href "/ai_admin_panel/"
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
+      - id: deployment
+        uses: actions/deploy-pages@v4
