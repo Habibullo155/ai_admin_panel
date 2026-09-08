@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../models/cloud_voice.dart';
 import '../models/voice_settings.dart';
 import '../services/app_settings_service.dart';
 import '../services/cloud_tts_service.dart';
@@ -86,10 +87,10 @@ class VoiceStore extends ChangeNotifier {
     // голос стал недействителен. Не различаем "выбрал сам то же самое,
     // что дефолт" от "просто остался дефолт" - редкий крайний случай
     if (isCloudTtsAvailable) {
-      final currentIsValid = sileroCloudVoices.any((v) => v.name == settings.cloudVoiceName);
-      final adminDefaultIsValid = sileroCloudVoices.any((v) => v.name == publicSettings.defaultVoice);
+      final currentIsValid = elevenLabsCloudVoices.any((v) => v.name == settings.cloudVoiceName);
+      final adminDefaultIsValid = elevenLabsCloudVoices.any((v) => v.name == publicSettings.defaultVoice);
       if (!hadSavedSettings || !currentIsValid) {
-        final fallback = adminDefaultIsValid ? publicSettings.defaultVoice : sileroCloudVoices.first.name;
+        final fallback = adminDefaultIsValid ? publicSettings.defaultVoice : elevenLabsCloudVoices.first.name;
         settings = settings.copyWith(cloudVoiceName: fallback);
         await _settingsService.save(settings);
       }
@@ -431,8 +432,6 @@ class VoiceStore extends ChangeNotifier {
   }
 
   final List<Uint8List> _playbackQueue = [];
-
-  get sileroCloudVoices => null;
 
   Future<void> _pumpPlayback() async {
     if (_isPlayingQueue) return;

@@ -8,12 +8,14 @@ import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/glass_panel.dart';
 
-/// Пул серверов Ollama для распределения нагрузки генерации ответов.
-/// Документы (их эмбеддинги) синхронизировать никуда не нужно - они
-/// живут в общей базе данных, доступны с любого сервера. Единственное,
-/// что нужно новому серверу - сами модели, установка которых идёт в
-/// фоне на бэкенде сразу после добавления - здесь просто опрашиваем
-/// прогресс, пока он не завершится.
+/// Пул серверов моделей (OpenAI-совместимый API - vLLM) для
+/// распределения нагрузки генерации ответов. Документы (их эмбеддинги)
+/// синхронизировать никуда не нужно - они живут в общей базе данных,
+/// доступны с любого сервера. В отличие от Ollama - установить модель на
+/// сервер бэкенд не может, только проверить, что нужная модель там уже
+/// загружена (флаг --model при запуске самого vLLM) - проверка идёт в
+/// фоне на бэкенде сразу после добавления, здесь просто опрашиваем
+/// статус, пока он не станет окончательным.
 class AdminOllamaPoolPanel extends StatefulWidget {
   final AuthStore authStore;
   const AdminOllamaPoolPanel({super.key, required this.authStore});
@@ -104,7 +106,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1A2036),
-        title: const Text('Добавить сервер Ollama', style: TextStyle(color: Colors.white)),
+        title: const Text('Добавить сервер модели', style: TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -229,7 +231,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
         children: [
           Row(
             children: [
-              Text('Серверы Ollama', style: TextStyle(color: context.onSurface, fontSize: 20, fontWeight: FontWeight.w700)),
+              Text('Серверы моделей', style: TextStyle(color: context.onSurface, fontSize: 20, fontWeight: FontWeight.w700)),
               const Spacer(),
               IconButton(icon: Icon(Icons.refresh_rounded, color: context.onSurfaceFaded(0.5)), onPressed: _load),
               FilledButton.icon(
@@ -298,13 +300,11 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
             ),
             const SizedBox(height: 10),
             if (server.isBusyPreparing) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+              const ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
                 child: LinearProgressIndicator(
-                  value: server.pullProgress > 0 ? server.pullProgress / 100 : null,
                   minHeight: 6,
-                  backgroundColor: context.onSurfaceFaded(0.08),
-                  color: const Color(0xFF6C5CE7),
+                  color: Color(0xFF6C5CE7),
                 ),
               ),
               const SizedBox(height: 6),
@@ -354,15 +354,13 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
   String _statusLabel(String status) {
     switch (status) {
       case 'pending':
-        return 'Ожидает проверки...';
-      case 'pulling_models':
-        return 'Устанавливаю модели...';
+        return 'Проверяю сервер...';
       case 'ready':
         return 'Готов к работе.';
       case 'unreachable':
         return 'Сервер недоступен.';
-      case 'error':
-        return 'Ошибка установки моделей.';
+      case 'model_mismatch':
+        return 'Сервер обслуживает не ту модель.';
       default:
         return status;
     }

@@ -29,14 +29,11 @@ class BiometricService {
   /// сработал, ОС сама предложит PIN/графический ключ устройства как
   /// запасной вариант (стандартное поведение большинства приложений, не
   /// наше решение поверх ОС).
-  Future<bool> authenticate({
-    String reason = 'Подтверди личность, чтобы войти',
-  }) async {
+  Future<bool> authenticate({String reason = 'Подтверди личность, чтобы войти'}) async {
     try {
       return await _auth.authenticate(
         localizedReason: reason,
-        biometricOnly: false, // Передаем напрямую
-        persistAcrossBackgrounding: true, // Передаем напрямую
+        options: const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
       );
     } catch (_) {
       return false;

@@ -209,7 +209,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
             style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
           ),
           const SizedBox(height: 10),
-          // ...sileroCloudVoices.map((v) => _buildCloudVoiceTile(voice, v)),
+          ...elevenLabsCloudVoices.map((v) => _buildCloudVoiceTile(voice, v)),
         ] else if (voice.availableVoices.isEmpty) ...[
           const SizedBox(height: 16),
           Text(

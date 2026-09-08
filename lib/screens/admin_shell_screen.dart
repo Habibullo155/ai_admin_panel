@@ -533,36 +533,47 @@ class _DashboardPanelState extends State<_DashboardPanel> {
       (_formatCents(stats.purchasesTotalCentsInPeriod), 'выручка за месяц', Icons.payments_rounded, const Color(0xFF00E6A0)),
     ];
 
-    return GridView.count(
-      crossAxisCount: 4,
+    return GridView.builder(
+      // раньше GridView.count(crossAxisCount: 4) - фиксированное число
+      // колонок независимо от ширины экрана. На узком мобильном (390px)
+      // каждая ячейка получалась слишком узкой и низкой для содержимого
+      // (иконка + крупное число + подпись, часто переносящаяся на две
+      // строки) - отсюда визуальные перекосы на телефоне. Теперь колонок
+      // столько, сколько реально помещается по 150px на каждую - меньше
+      // на телефоне, больше на широком экране, само подстраивается
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 150,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.3,
+      ),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.7,
-      children: items
-          .map((item) => GlassPanel(
-                opacity: 0.06,
-                borderRadius: BorderRadius.circular(14),
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: item.$4.withValues(alpha: 0.16)),
-                      child: Icon(item.$3, size: 15, color: item.$4),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(item.$1, style: TextStyle(color: context.onSurface, fontSize: 20, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 2),
-                    Text(item.$2, style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 11)),
-                  ],
-                ),
-              ))
-          .toList(),
+      itemCount: items.length,
+      itemBuilder: (context, i) {
+        final item = items[i];
+        return GlassPanel(
+          opacity: 0.06,
+          borderRadius: BorderRadius.circular(14),
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: item.$4.withValues(alpha: 0.16)),
+                child: Icon(item.$3, size: 15, color: item.$4),
+              ),
+              const SizedBox(height: 8),
+              Text(item.$1, style: TextStyle(color: context.onSurface, fontSize: 20, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 2),
+              Text(item.$2, style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 11)),
+            ],
+          ),
+        );
+      },
     );
   }
 

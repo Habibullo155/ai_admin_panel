@@ -12,19 +12,21 @@ class _MuscleStep {
   final String releaseInstruction;
   final int tenseSeconds;
   final int releaseSeconds;
-  _MuscleStep({
+  const _MuscleStep({
     required this.muscleGroup,
     required this.tenseInstruction,
     required this.releaseInstruction,
-  }) : tenseSeconds = 5, releaseSeconds = 10;
+    this.tenseSeconds = 5,
+    this.releaseSeconds = 10,
+  });
 }
 
-final _steps = [
+const _steps = [
   _MuscleStep(muscleGroup: 'Кисти рук', tenseInstruction: 'Сильно сожми кулаки', releaseInstruction: 'Резко расслабь и почувствуй тепло'),
-   _MuscleStep(muscleGroup: 'Плечи', tenseInstruction: 'Подними плечи к ушам как можно выше', releaseInstruction: 'Отпусти, дай плечам упасть'),
-   _MuscleStep(muscleGroup: 'Лицо', tenseInstruction: 'Зажмурься и сожми челюсти', releaseInstruction: 'Расслабь лицо полностью'),
-   _MuscleStep(muscleGroup: 'Пресс', tenseInstruction: 'Напряги живот, будто готовишься к удару', releaseInstruction: 'Отпусти напряжение'),
-   _MuscleStep(muscleGroup: 'Ноги', tenseInstruction: 'Вытяни ноги и напряги стопы', releaseInstruction: 'Дай ногам расслабиться'),
+  _MuscleStep(muscleGroup: 'Плечи', tenseInstruction: 'Подними плечи к ушам как можно выше', releaseInstruction: 'Отпусти, дай плечам упасть'),
+  _MuscleStep(muscleGroup: 'Лицо', tenseInstruction: 'Зажмурься и сожми челюсти', releaseInstruction: 'Расслабь лицо полностью'),
+  _MuscleStep(muscleGroup: 'Пресс', tenseInstruction: 'Напряги живот, будто готовишься к удару', releaseInstruction: 'Отпусти напряжение'),
+  _MuscleStep(muscleGroup: 'Ноги', tenseInstruction: 'Вытяни ноги и напряги стопы', releaseInstruction: 'Дай ногам расслабиться'),
 ];
 
 enum _Phase { intro, tense, release, done }
