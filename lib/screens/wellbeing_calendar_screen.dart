@@ -311,7 +311,7 @@ class _WellbeingCalendarScreenState extends State<WellbeingCalendarScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: isSelected ? const Color(0xFF6C5CE7).withOpacity(0.35) : Colors.transparent,
+                        color: isSelected ? const Color(0xFF6C5CE7).withValues(alpha: 0.35) : Colors.transparent,
                         border: isToday ? Border.all(color: context.onSurfaceFaded(0.4)) : null,
                       ),
                       child: Column(

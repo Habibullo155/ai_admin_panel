@@ -133,7 +133,7 @@ class _GlassBottomNav extends StatelessWidget {
                 Icon(
                   item.icon,
                   size: 22,
-                  color: selected ? Colors.white : Colors.white.withOpacity(0.5),
+                  color: selected ? Colors.white : Colors.white.withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -141,7 +141,7 @@ class _GlassBottomNav extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10.5,
                     fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                    color: selected ? Colors.white : Colors.white.withOpacity(0.5),
+                    color: selected ? Colors.white : Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ],

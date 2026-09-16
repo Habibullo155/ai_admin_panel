@@ -33,7 +33,7 @@ Future<void> confirmAndLogout(BuildContext context, AuthStore authStore) async {
               const SizedBox(height: 8),
               Text(
                 'История переписки на этом устройстве останется — она нигде, кроме этого устройства, не хранится.',
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.4),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13, height: 1.4),
               ),
               const SizedBox(height: 18),
               Row(
@@ -41,7 +41,7 @@ Future<void> confirmAndLogout(BuildContext context, AuthStore authStore) async {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                    child: Text('Отмена', style: TextStyle(color: Colors.white.withValues(alpha: 0.6))),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(

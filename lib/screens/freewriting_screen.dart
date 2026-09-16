@@ -201,7 +201,7 @@ class _FreewritingScreenState extends State<FreewritingScreen> with SingleTicker
       builder: (context, child) {
         final pulse = _pulseController.value * 0.06;
         return DecoratedBox(
-          decoration: BoxDecoration(color: const Color(0xFFFFD166).withOpacity(pulse)),
+          decoration: BoxDecoration(color: const Color(0xFFFFD166).withValues(alpha: pulse)),
           child: child,
         );
       },

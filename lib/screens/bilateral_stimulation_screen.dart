@@ -148,7 +148,7 @@ class _BilateralStimulationScreenState extends State<BilateralStimulationScreen>
                                                 shape: BoxShape.circle,
                                                 gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00D9C0)]),
                                                 boxShadow: [
-                                                  BoxShadow(color: const Color(0xFF6C5CE7).withOpacity(0.5), blurRadius: 16, spreadRadius: 2),
+                                                  BoxShadow(color: const Color(0xFF6C5CE7).withValues(alpha: 0.5), blurRadius: 16, spreadRadius: 2),
                                                 ],
                                               ),
                                             ),

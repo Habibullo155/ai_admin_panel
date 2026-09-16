@@ -262,7 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: PerformanceModeStore.instance.enabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) => PerformanceModeStore.instance.setEnabled(v),
                                         ),
                                       ],
@@ -301,7 +301,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: prefs.soundEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) => prefs.setSoundEnabled(v),
                                         ),
                                       ],
@@ -316,7 +316,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: prefs.vibrationEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) => prefs.setVibrationEnabled(v),
                                         ),
                                       ],
@@ -350,7 +350,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         ),
                                         Switch(
                                           value: voice.settings.voiceUiEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: (v) => voice.updateSettings(voice.settings.copyWith(voiceUiEnabled: v)),
                                         ),
                                       ],
@@ -413,7 +413,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       else
                                         Switch(
                                           value: _biometricEnabled,
-                                          activeColor: const Color(0xFF6C5CE7),
+                                          activeThumbColor: const Color(0xFF6C5CE7),
                                           onChanged: _toggleBiometric,
                                         ),
                                     ],
@@ -475,7 +475,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     else
                                       Switch(
                                         value: _reminderEnabled,
-                                        activeColor: const Color(0xFF6C5CE7),
+                                        activeThumbColor: const Color(0xFF6C5CE7),
                                         onChanged: _toggleReminder,
                                       ),
                                   ],

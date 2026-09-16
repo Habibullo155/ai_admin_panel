@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../state/theme_store.dart';
-import '../theme/background_variant.dart';
 
 // Статичный фон-градиент под тему - раньше здесь была та же анимация с
 // плавающими бликами, что и в основном пользовательском приложении

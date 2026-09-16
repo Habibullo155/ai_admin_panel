@@ -156,7 +156,7 @@ class _AdminPurchasesPanelState extends State<AdminPurchasesPanel> {
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: const Color(0xFF6C5CE7).withOpacity(0.15),
+                color: const Color(0xFF6C5CE7).withValues(alpha: 0.15),
               ),
               child: Text(
                 p.tariff,

@@ -352,7 +352,7 @@ class _BurnPainter extends CustomPainter {
       canvas.drawPath(
         charPath,
         Paint()
-          ..color = const Color(0xFF3A2313).withOpacity(0.5)
+          ..color = const Color(0xFF3A2313).withValues(alpha: 0.5)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 10,
       );
@@ -397,7 +397,7 @@ class _BurnPainter extends CustomPainter {
           radius,
           Paint()
             ..shader = RadialGradient(
-              colors: [const Color(0xFF9B9B9B).withOpacity(fade), const Color(0xFF9B9B9B).withOpacity(0.0)],
+              colors: [const Color(0xFF9B9B9B).withValues(alpha: fade), const Color(0xFF9B9B9B).withValues(alpha: 0.0)],
             ).createShader(Rect.fromCircle(center: center, radius: radius)),
         );
       }
@@ -421,7 +421,7 @@ class _BurnPainter extends CustomPainter {
           ..quadraticBezierTo(base.dx - 10 + lean * 0.5, base.dy - height * 0.5, base.dx + lean, base.dy - height)
           ..quadraticBezierTo(base.dx + 10 + lean * 0.5, base.dy - height * 0.5, base.dx + 9, base.dy + 2)
           ..close();
-        canvas.drawPath(outer, Paint()..color = const Color(0xFFFF5A36).withOpacity(0.65));
+        canvas.drawPath(outer, Paint()..color = const Color(0xFFFF5A36).withValues(alpha: 0.65));
 
         // внутренний язык - уже, ярче, жёлто-белый - классический приём
         // двухслойного пламени для более убедительного вида
@@ -431,7 +431,7 @@ class _BurnPainter extends CustomPainter {
           ..quadraticBezierTo(base.dx - 4 + lean * 0.5, base.dy - innerHeight * 0.5, base.dx + lean * 0.7, base.dy - innerHeight)
           ..quadraticBezierTo(base.dx + 4 + lean * 0.5, base.dy - innerHeight * 0.5, base.dx + 4, base.dy + 2)
           ..close();
-        canvas.drawPath(inner, Paint()..color = const Color(0xFFFFD166).withOpacity(0.8));
+        canvas.drawPath(inner, Paint()..color = const Color(0xFFFFD166).withValues(alpha: 0.8));
       }
     }
 
@@ -465,7 +465,7 @@ class _BurnPainter extends CustomPainter {
 
       final fade = (1 - localProgress).clamp(0.0, 1.0);
       final color = Color.lerp(const Color(0xFFFFB37A), const Color(0xFFFF5A36), seed)!;
-      particlePaint.color = color.withOpacity(fade * 0.85);
+      particlePaint.color = color.withValues(alpha: fade * 0.85);
       canvas.drawCircle(Offset(originX + wobble, y), 1.3 + seed * 2.2, particlePaint);
     }
   }
@@ -513,13 +513,13 @@ class _ShatterPainter extends CustomPainter {
     if (progress < 0.3) {
       // настоящая тарелка - обод и внутренняя часть двумя концентрическими
       // кругами, а не один плоский круг с тонкой обводкой, как раньше
-      canvas.drawCircle(center, plateRadius, Paint()..color = baseColor.withOpacity(0.16));
-      canvas.drawCircle(center, plateRadius * 0.78, Paint()..color = baseColor.withOpacity(0.08));
+      canvas.drawCircle(center, plateRadius, Paint()..color = baseColor.withValues(alpha: 0.16));
+      canvas.drawCircle(center, plateRadius * 0.78, Paint()..color = baseColor.withValues(alpha: 0.08));
       canvas.drawCircle(
         center,
         plateRadius,
         Paint()
-          ..color = baseColor.withOpacity(0.3)
+          ..color = baseColor.withValues(alpha: 0.3)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2,
       );
@@ -527,7 +527,7 @@ class _ShatterPainter extends CustomPainter {
         center,
         plateRadius * 0.78,
         Paint()
-          ..color = baseColor.withOpacity(0.18)
+          ..color = baseColor.withValues(alpha: 0.18)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.2,
       );
@@ -535,7 +535,7 @@ class _ShatterPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: text,
-          style: TextStyle(color: baseColor.withOpacity(0.85), fontSize: 12.5, height: 1.4),
+          style: TextStyle(color: baseColor.withValues(alpha: 0.85), fontSize: 12.5, height: 1.4),
         ),
         textAlign: TextAlign.center,
         maxLines: 6,
@@ -565,7 +565,7 @@ class _ShatterPainter extends CustomPainter {
           canvas.drawPath(
             path,
             Paint()
-              ..color = baseColor.withOpacity(0.55 * crackPhase)
+              ..color = baseColor.withValues(alpha: 0.55 * crackPhase)
               ..style = PaintingStyle.stroke
               ..strokeWidth = 1.4,
           );
@@ -585,7 +585,7 @@ class _ShatterPainter extends CustomPainter {
           canvas.drawCircle(
             center + Offset(math.cos(a) * r, math.sin(a) * r),
             1.5,
-            Paint()..color = baseColor.withOpacity(0.35 * dustFade),
+            Paint()..color = baseColor.withValues(alpha: 0.35 * dustFade),
           );
         }
       }
@@ -613,12 +613,12 @@ class _ShatterPainter extends CustomPainter {
           ..lineTo(baseSize * 0.3 + _rnd.nextDouble() * 4, baseSize * 0.6 + _rnd.nextDouble() * 4)
           ..lineTo(-baseSize * 0.5 + _rnd.nextDouble() * 4, baseSize * 0.2 + _rnd.nextDouble() * 4)
           ..close();
-        canvas.drawPath(shardPath, Paint()..color = baseColor.withOpacity(fade * 0.55));
+        canvas.drawPath(shardPath, Paint()..color = baseColor.withValues(alpha: fade * 0.55));
         // тонкая светлая грань по контуру - ощущение объёма у обломка
         canvas.drawPath(
           shardPath,
           Paint()
-            ..color = baseColor.withOpacity(fade * 0.3)
+            ..color = baseColor.withValues(alpha: fade * 0.3)
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1,
         );

@@ -62,6 +62,8 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
       if (mounted) setState(() => _sounds = sounds);
     } on SoundsException catch (e) {
       if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Не удалось загрузить список звуков — проверь соединение с сервером.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -111,6 +113,13 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
       await _load();
     } on SoundsException catch (e) {
       if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      // сетевой сбой (обрыв соединения, таймаут) - НЕ SoundsException
+      // (тот кидается только на явный HTTP-код ошибки от сервера), без
+      // этого перехвата ушло бы необработанным исключением наверх, и
+      // человек увидел бы общий экран ошибки вместо понятного "не
+      // получилось загрузить, проверь соединение"
+      if (mounted) setState(() => _error = 'Не удалось загрузить файл — проверь соединение с сервером.');
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -136,6 +145,8 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
       });
     } on SoundsException catch (e) {
       if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Не удалось воспроизвести звук — проверь соединение с сервером.');
     }
   }
 
@@ -151,6 +162,8 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
       await _load();
     } on SoundsException catch (e) {
       if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Не удалось удалить звук — проверь соединение с сервером.');
     }
   }
 

@@ -85,7 +85,7 @@ class _LockScreenState extends State<LockScreen> {
                             ? 'Не удалось подтвердить — попробуй ещё раз.'
                             : 'Подтверди личность, чтобы продолжить.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13.5),
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13.5),
                       ),
                       const SizedBox(height: 24),
                       Material(
@@ -113,7 +113,7 @@ class _LockScreenState extends State<LockScreen> {
                       const SizedBox(height: 12),
                       TextButton(
                         onPressed: _isChecking ? null : widget.authStore.continueWithoutBiometrics,
-                        child: Text('Войти паролем', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                        child: Text('Войти паролем', style: TextStyle(color: Colors.white.withValues(alpha: 0.6))),
                       ),
                     ],
                   ),

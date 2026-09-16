@@ -223,7 +223,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: isClosed ? context.onSurfaceFaded(0.08) : const Color(0xFF00D9C0).withOpacity(0.18),
+                    color: isClosed ? context.onSurfaceFaded(0.08) : const Color(0xFF00D9C0).withValues(alpha: 0.18),
                   ),
                   child: Text(
                     isClosed ? 'Закрыто' : 'Открыто',

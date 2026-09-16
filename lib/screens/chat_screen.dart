@@ -274,7 +274,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           Switch(
                             value: active,
                             onChanged: (v) => ThemeStore.instance.setReducedContrast(v),
-                            activeColor: const Color(0xFF6C5CE7),
+                            activeThumbColor: const Color(0xFF6C5CE7),
                           ),
                         ],
                       ),
@@ -372,10 +372,10 @@ class _ChatScreenState extends State<ChatScreen> {
     final userId = widget.authStore.user?.id.toString();
     if (userId == null || !mounted) return;
 
-    final discuss = (String summary) async {
+    Future<void> discuss(String summary) async {
       await widget.store.sendMessage(summary);
       _scrollToBottom();
-    };
+    }
 
     final test = await showModalBottomSheet<String>(
       context: context,
@@ -801,8 +801,8 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              color: const Color(0xFFFFD166).withOpacity(0.12),
-              border: Border.all(color: const Color(0xFFFFD166).withOpacity(0.3)),
+              color: const Color(0xFFFFD166).withValues(alpha: 0.12),
+              border: Border.all(color: const Color(0xFFFFD166).withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -1012,7 +1012,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF6C5CE7).withOpacity(0.5),
+                    color: const Color(0xFF6C5CE7).withValues(alpha: 0.5),
                     blurRadius: 30,
                   ),
                 ],

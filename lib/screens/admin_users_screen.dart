@@ -309,7 +309,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget _badge(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: color.withOpacity(0.18)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: color.withValues(alpha: 0.18)),
       child: Text(text, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),
     );
   }
@@ -585,7 +585,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                     child: OutlinedButton(
                       onPressed: _isBusy ? null : () => _apply(isActive: !user.isActive),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: (user.isActive ? const Color(0xFFFF6B6B) : const Color(0xFF00E6A0)).withOpacity(0.4)),
+                        side: BorderSide(color: (user.isActive ? const Color(0xFFFF6B6B) : const Color(0xFF00E6A0)).withValues(alpha: 0.4)),
                         foregroundColor: user.isActive ? const Color(0xFFFFB4B4) : const Color(0xFF00E6A0),
                       ),
                       child: Text(user.isActive ? 'Деактивировать' : 'Активировать'),
@@ -600,7 +600,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                 child: OutlinedButton.icon(
                   onPressed: _isBusy ? null : () => _apply(isOperator: !user.isOperator),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: (user.isOperator ? const Color(0xFF00E6A0) : context.onSurface).withOpacity(0.16)),
+                    side: BorderSide(color: (user.isOperator ? const Color(0xFF00E6A0) : context.onSurface).withValues(alpha: 0.16)),
                     foregroundColor: user.isOperator ? const Color(0xFF00E6A0) : context.onSurface,
                   ),
                   icon: Icon(user.isOperator ? Icons.support_agent_rounded : Icons.support_agent_outlined, size: 18),
@@ -623,7 +623,7 @@ class _EditUserSheetState extends State<_EditUserSheet> {
                         icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFFFB4B4)),
                         label: const Text('Удалить пользователя', style: TextStyle(color: Color(0xFFFFB4B4))),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: const Color(0xFFFF6B6B).withOpacity(0.4)),
+                          side: BorderSide(color: const Color(0xFFFF6B6B).withValues(alpha: 0.4)),
                         ),
                       ),
                     ),
@@ -773,7 +773,7 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   value: _isOperator,
                   onChanged: (v) => setState(() => _isOperator = v),
-                  activeColor: const Color(0xFF00E6A0),
+                  activeThumbColor: const Color(0xFF00E6A0),
                   title: Text('Доступ к живой помощи', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                   subtitle: Text(
                     'Сможет видеть очередь заявок и подключаться к чатам — например, для врача/оператора.',

@@ -131,13 +131,13 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
               // после добавления, а не что-то незаметно поломать
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Уровень модели', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5)),
+                child: Text('Уровень модели', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12.5)),
               ),
               const SizedBox(height: 6),
               SegmentedButton<String>(
                 segments: const [
-                  ButtonSegment(value: 'base', label: Text('Base')),
-                  ButtonSegment(value: 'pro', label: Text('Pro')),
+                  ButtonSegment(value: 'base', label: Text('Обычный ИИ')),
+                  ButtonSegment(value: 'pro', label: Text('Про ИИ')),
                 ],
                 selected: {selectedTier},
                 onSelectionChanged: (selection) => setDialogState(() => selectedTier = selection.first),
@@ -213,7 +213,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
             title: const Text('Удалить сервер?', style: TextStyle(color: Colors.white)),
             content: Text(
               '«${server.name}» больше не будет получать запросы.',
-              style: TextStyle(color: Colors.white.withOpacity(0.75)),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.75)),
             ),
             actions: [
               TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Отмена')),
@@ -321,7 +321,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
                 ),
                 Switch(
                   value: server.enabled,
-                  activeColor: const Color(0xFF6C5CE7),
+                  activeThumbColor: const Color(0xFF6C5CE7),
                   onChanged: (_) => _toggleEnabled(server),
                 ),
               ],
@@ -371,7 +371,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
   }
 
   Widget _buildTierBadge(bool isPro) {
-    final color = isPro ? const Color(0xFFFFD166) : Colors.white.withOpacity(0.3);
+    final color = isPro ? const Color(0xFFFFD166) : Colors.white.withValues(alpha: 0.3);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
@@ -379,7 +379,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
         border: Border.all(color: color),
       ),
       child: Text(
-        isPro ? 'PRO' : 'BASE',
+        isPro ? 'ПРО' : 'ОБЫЧНЫЙ',
         style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5),
       ),
     );

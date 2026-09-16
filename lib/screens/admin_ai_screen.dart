@@ -451,7 +451,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: _temperatureColor(_temperature),
                   thumbColor: _temperatureColor(_temperature),
-                  overlayColor: _temperatureColor(_temperature).withOpacity(0.2),
+                  overlayColor: _temperatureColor(_temperature).withValues(alpha: 0.2),
                   inactiveTrackColor: context.onSurfaceFaded(0.12),
                 ),
                 child: Slider(
@@ -477,7 +477,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: const Color(0xFF00E6A0),
                   thumbColor: const Color(0xFF00E6A0),
-                  overlayColor: const Color(0xFF00E6A0).withOpacity(0.2),
+                  overlayColor: const Color(0xFF00E6A0).withValues(alpha: 0.2),
                   inactiveTrackColor: context.onSurfaceFaded(0.12),
                 ),
                 child: Slider(
@@ -519,7 +519,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                   Switch(
                     value: _themeControlEnabled,
                     onChanged: (v) => setState(() => _themeControlEnabled = v),
-                    activeColor: const Color(0xFF6C5CE7),
+                    activeThumbColor: const Color(0xFF6C5CE7),
                   ),
                 ],
               ),

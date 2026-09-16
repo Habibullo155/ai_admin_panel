@@ -9,7 +9,6 @@ import '../models/chat_message.dart';
 import '../services/chat_api_service.dart';
 import '../services/storage_service.dart';
 import 'notification_prefs_store.dart';
-import '../theme/background_variant.dart';
 import 'theme_store.dart';
 
 const _uuid = Uuid();

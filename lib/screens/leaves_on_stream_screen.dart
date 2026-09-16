@@ -244,8 +244,8 @@ class _StreamPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color(0xFF0B3B4A).withOpacity(0.05),
-          const Color(0xFF0B3B4A).withOpacity(0.22),
+          const Color(0xFF0B3B4A).withValues(alpha: 0.05),
+          const Color(0xFF0B3B4A).withValues(alpha: 0.22),
         ],
       ).createShader(Offset.zero & size);
     canvas.drawRect(Offset.zero & size, gradient);
@@ -260,7 +260,7 @@ class _StreamPainter extends CustomPainter {
     canvas.save();
     canvas.translate(x, y);
     canvas.rotate(angle);
-    canvas.saveLayer(const Rect.fromLTWH(-90, -90, 180, 180), Paint()..color = Colors.white.withOpacity(opacity));
+    canvas.saveLayer(const Rect.fromLTWH(-90, -90, 180, 180), Paint()..color = Colors.white.withValues(alpha: opacity));
 
     _paintLeafShape(canvas, text.hashCode);
     _paintLeafText(canvas, text);
@@ -293,7 +293,7 @@ class _StreamPainter extends CustomPainter {
     final vein = Path()
       ..moveTo(0, -h * 0.42)
       ..quadraticBezierTo(rnd.nextDouble() * 6 - 3, 0, 0, h * 0.42);
-    canvas.drawPath(vein, Paint()..color = Colors.white.withOpacity(0.25)..style = PaintingStyle.stroke..strokeWidth = 1.4);
+    canvas.drawPath(vein, Paint()..color = Colors.white.withValues(alpha: 0.25)..style = PaintingStyle.stroke..strokeWidth = 1.4);
   }
 
   void _paintLeafText(Canvas canvas, String text) {

@@ -335,7 +335,7 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
           child: OutlinedButton.icon(
             onPressed: _isBusy ? null : _issueWarning,
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: const Color(0xFFFF6B6B).withOpacity(0.4)),
+              side: BorderSide(color: const Color(0xFFFF6B6B).withValues(alpha: 0.4)),
               foregroundColor: const Color(0xFFFF6B6B),
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
@@ -360,7 +360,7 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
         IconButton(
           onPressed: _isBusy ? null : _deleteAccount,
           style: IconButton.styleFrom(
-            side: BorderSide(color: const Color(0xFFFF6B6B).withOpacity(0.3)),
+            side: BorderSide(color: const Color(0xFFFF6B6B).withValues(alpha: 0.3)),
             padding: const EdgeInsets.all(12),
           ),
           icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFFF6B6B), size: 20),
@@ -412,7 +412,7 @@ class _OperatorDetailScreenState extends State<OperatorDetailScreen> {
         blurred: false,
         borderRadius: BorderRadius.circular(12),
         border: hasRating && session.rating! <= 2
-            ? Border.all(color: const Color(0xFFFF6B6B).withOpacity(0.4))
+            ? Border.all(color: const Color(0xFFFF6B6B).withValues(alpha: 0.4))
             : null,
         child: Material(
           color: Colors.transparent,

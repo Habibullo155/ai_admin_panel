@@ -16,17 +16,36 @@ class _MuscleStep {
     required this.muscleGroup,
     required this.tenseInstruction,
     required this.releaseInstruction,
-    this.tenseSeconds = 5,
-    this.releaseSeconds = 10,
-  });
+  }) : tenseSeconds = 5,
+       releaseSeconds = 10;
 }
 
 const _steps = [
-  _MuscleStep(muscleGroup: 'Кисти рук', tenseInstruction: 'Сильно сожми кулаки', releaseInstruction: 'Резко расслабь и почувствуй тепло'),
-  _MuscleStep(muscleGroup: 'Плечи', tenseInstruction: 'Подними плечи к ушам как можно выше', releaseInstruction: 'Отпусти, дай плечам упасть'),
-  _MuscleStep(muscleGroup: 'Лицо', tenseInstruction: 'Зажмурься и сожми челюсти', releaseInstruction: 'Расслабь лицо полностью'),
-  _MuscleStep(muscleGroup: 'Пресс', tenseInstruction: 'Напряги живот, будто готовишься к удару', releaseInstruction: 'Отпусти напряжение'),
-  _MuscleStep(muscleGroup: 'Ноги', tenseInstruction: 'Вытяни ноги и напряги стопы', releaseInstruction: 'Дай ногам расслабиться'),
+  _MuscleStep(
+    muscleGroup: 'Кисти рук',
+    tenseInstruction: 'Сильно сожми кулаки',
+    releaseInstruction: 'Резко расслабь и почувствуй тепло',
+  ),
+  _MuscleStep(
+    muscleGroup: 'Плечи',
+    tenseInstruction: 'Подними плечи к ушам как можно выше',
+    releaseInstruction: 'Отпусти, дай плечам упасть',
+  ),
+  _MuscleStep(
+    muscleGroup: 'Лицо',
+    tenseInstruction: 'Зажмурься и сожми челюсти',
+    releaseInstruction: 'Расслабь лицо полностью',
+  ),
+  _MuscleStep(
+    muscleGroup: 'Пресс',
+    tenseInstruction: 'Напряги живот, будто готовишься к удару',
+    releaseInstruction: 'Отпусти напряжение',
+  ),
+  _MuscleStep(
+    muscleGroup: 'Ноги',
+    tenseInstruction: 'Вытяни ноги и напряги стопы',
+    releaseInstruction: 'Дай ногам расслабиться',
+  ),
 ];
 
 enum _Phase { intro, tense, release, done }
@@ -60,13 +79,15 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
       _phase = _Phase.tense;
       _secondsLeft = step.tenseSeconds;
     });
-    _runCountdown(onDone: () {
-      setState(() {
-        _phase = _Phase.release;
-        _secondsLeft = step.releaseSeconds;
-      });
-      _runCountdown(onDone: _advanceStep);
-    });
+    _runCountdown(
+      onDone: () {
+        setState(() {
+          _phase = _Phase.release;
+          _secondsLeft = step.releaseSeconds;
+        });
+        _runCountdown(onDone: _advanceStep);
+      },
+    );
   }
 
   void _runCountdown({required VoidCallback onDone}) {
@@ -111,12 +132,19 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back_rounded, color: context.onSurface),
+                      icon: Icon(
+                        Icons.arrow_back_rounded,
+                        color: context.onSurface,
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Text(
                       'Мышечная релаксация',
-                      style: TextStyle(color: context.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        color: context.onSurface,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -155,7 +183,11 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
             'По очереди напряжём и расслабим ${_steps.length} групп мышц. '
             'На каждую — несколько секунд напряжения, потом расслабление. '
             'Устройся поудобнее, чтобы двигать руками/ногами было ничем не стеснено.',
-            style: TextStyle(color: context.onSurfaceFaded(0.65), fontSize: 13.5, height: 1.5),
+            style: TextStyle(
+              color: context.onSurfaceFaded(0.65),
+              fontSize: 13.5,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 20),
           Material(
@@ -168,9 +200,17 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  gradient: const LinearGradient(colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)]),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6C5CE7), Color(0xFF00B4D8)],
+                  ),
                 ),
-                child: const Text('Начать', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                child: const Text(
+                  'Начать',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ),
@@ -193,14 +233,19 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
                 height: 4,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(2),
-                  color: i <= _stepIndex ? const Color(0xFF6C5CE7) : context.onSurfaceFaded(0.12),
+                  color: i <= _stepIndex
+                      ? const Color(0xFF6C5CE7)
+                      : context.onSurfaceFaded(0.12),
                 ),
               ),
             ),
           ),
         ),
         const SizedBox(height: 6),
-        Text('${_stepIndex + 1} из ${_steps.length}', style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5)),
+        Text(
+          '${_stepIndex + 1} из ${_steps.length}',
+          style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11.5),
+        ),
         const SizedBox(height: 20),
         GlassPanel(
           opacity: 0.08,
@@ -208,12 +253,24 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              Text(step.muscleGroup, style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5, letterSpacing: 1)),
+              Text(
+                step.muscleGroup,
+                style: TextStyle(
+                  color: context.onSurfaceFaded(0.5),
+                  fontSize: 12.5,
+                  letterSpacing: 1,
+                ),
+              ),
               const SizedBox(height: 12),
               Text(
                 isTense ? step.tenseInstruction : step.releaseInstruction,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: context.onSurface, fontSize: 18, fontWeight: FontWeight.w600, height: 1.4),
+                style: TextStyle(
+                  color: context.onSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 24),
               Container(
@@ -223,10 +280,19 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: isTense ? [const Color(0xFFFF6B6B), const Color(0xFFFF9E9E)] : [const Color(0xFF00E6A0), const Color(0xFF6FE7D4)],
+                    colors: isTense
+                        ? [const Color(0xFFFF6B6B), const Color(0xFFFF9E9E)]
+                        : [const Color(0xFF00E6A0), const Color(0xFF6FE7D4)],
                   ),
                 ),
-                child: Text('$_secondsLeft', style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w700)),
+                child: Text(
+                  '$_secondsLeft',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ],
           ),
@@ -243,11 +309,18 @@ class _MuscleRelaxationScreenState extends State<MuscleRelaxationScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check_circle_outline_rounded, color: context.onSurfaceFaded(0.5), size: 40),
+          Icon(
+            Icons.check_circle_outline_rounded,
+            color: context.onSurfaceFaded(0.5),
+            size: 40,
+          ),
           const SizedBox(height: 12),
           Text(
             'Готово — все группы мышц пройдены.',
-            style: TextStyle(color: context.onSurfaceFaded(0.7), fontSize: 14.5),
+            style: TextStyle(
+              color: context.onSurfaceFaded(0.7),
+              fontSize: 14.5,
+            ),
           ),
           const SizedBox(height: 20),
           TextButton(onPressed: _restart, child: const Text('Пройти ещё раз')),

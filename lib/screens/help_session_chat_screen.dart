@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-import '../models/gad7_checkin.dart';
 import '../models/help_session.dart';
-import '../models/phq9_checkin.dart';
-import '../models/wellbeing_checkin.dart';
 import '../services/asrs_service.dart';
 import '../services/gad7_service.dart';
 import '../services/help_service.dart';
@@ -530,7 +527,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: _pickedImages.length,
-                                    separatorBuilder: (_, __) => const SizedBox(width: 6),
+                                    separatorBuilder: (_, _) => const SizedBox(width: 6),
                                     itemBuilder: (context, i) => Stack(
                                       clipBehavior: Clip.none,
                                       children: [
@@ -628,7 +625,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
                   const SizedBox(height: 4),
                   Text(
                     DateFormat.Hm().format(message.createdAt),
-                    style: TextStyle(color: isMine ? Colors.white.withOpacity(0.65) : context.onSurfaceFaded(0.5), fontSize: 10.5),
+                    style: TextStyle(color: isMine ? Colors.white.withValues(alpha: 0.65) : context.onSurfaceFaded(0.5), fontSize: 10.5),
                   ),
                 ],
               ),

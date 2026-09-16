@@ -188,7 +188,7 @@ class _AdminOAuthPanelState extends State<AdminOAuthPanel> {
                 ),
                 Switch(
                   value: provider.enabled,
-                  activeColor: const Color(0xFF6C5CE7),
+                  activeThumbColor: const Color(0xFF6C5CE7),
                   // выключенный провайдер (не реализован целиком) нельзя
                   // включить - честнее не дать переключить, чем притворяться
                   onChanged: provider.isFlowImplemented ? (_) => _toggleEnabled(provider) : null,
@@ -211,7 +211,7 @@ class _AdminOAuthPanelState extends State<AdminOAuthPanel> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFD166).withOpacity(0.15),
+                  color: const Color(0xFFFFD166).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(

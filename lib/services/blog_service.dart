@@ -92,7 +92,7 @@ class BlogService {
           body: jsonEncode({
             'title': title,
             'content': content,
-            if (coverImageBase64 != null) 'cover_image_base64': coverImageBase64,
+            'cover_image_base64': ?coverImageBase64,
             'is_published': isPublished,
           }),
         )

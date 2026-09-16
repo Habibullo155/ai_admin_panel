@@ -91,7 +91,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                                       child: Center(
                                         child: Text(
                                           'Жалоб пока нет',
-                                          style: TextStyle(color: Colors.white.withOpacity(0.4)),
+                                          style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
                                         ),
                                       ),
                                     ),
@@ -138,7 +138,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: (isResolved ? const Color(0xFF00E6A0) : const Color(0xFFFFD166)).withOpacity(0.18),
+                    color: (isResolved ? const Color(0xFF00E6A0) : const Color(0xFFFFD166)).withValues(alpha: 0.18),
                   ),
                   child: Text(
                     isResolved ? 'Разобрано' : 'На рассмотрении',
@@ -152,17 +152,17 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 const Spacer(),
                 Text(
                   DateFormat.yMMMd().add_Hm().format(report.createdAt),
-                  style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 11),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            _buildLabeledText('Твой вопрос', report.userMessage, Colors.white.withOpacity(0.55)),
+            _buildLabeledText('Твой вопрос', report.userMessage, Colors.white.withValues(alpha: 0.55)),
             const SizedBox(height: 6),
-            _buildLabeledText('Ответ ИИ, на который пожаловался(-ась)', report.aiResponse, Colors.white.withOpacity(0.7)),
+            _buildLabeledText('Ответ ИИ, на который пожаловался(-ась)', report.aiResponse, Colors.white.withValues(alpha: 0.7)),
             if (report.reason != null && report.reason!.trim().isNotEmpty) ...[
               const SizedBox(height: 6),
-              _buildLabeledText('Причина жалобы', report.reason!, Colors.white.withOpacity(0.6)),
+              _buildLabeledText('Причина жалобы', report.reason!, Colors.white.withValues(alpha: 0.6)),
             ],
             if (hasReply) ...[
               const SizedBox(height: 12),
@@ -170,15 +170,15 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: const Color(0xFF6C5CE7).withOpacity(0.12),
-                  border: Border.all(color: const Color(0xFF6C5CE7).withOpacity(0.3)),
+                  color: const Color(0xFF6C5CE7).withValues(alpha: 0.12),
+                  border: Border.all(color: const Color(0xFF6C5CE7).withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'ОТВЕТ ОТ КОМАНДЫ',
-                      style: TextStyle(color: const Color(0xFF6C5CE7).withOpacity(0.8), fontSize: 10, letterSpacing: 0.8),
+                      style: TextStyle(color: const Color(0xFF6C5CE7).withValues(alpha: 0.8), fontSize: 10, letterSpacing: 0.8),
                     ),
                     const SizedBox(height: 4),
                     Text(report.adminReply!, style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4)),
@@ -196,7 +196,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label.toUpperCase(), style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 10, letterSpacing: 0.8)),
+        Text(label.toUpperCase(), style: TextStyle(color: Colors.white.withValues(alpha: 0.35), fontSize: 10, letterSpacing: 0.8)),
         const SizedBox(height: 2),
         Text(text, style: TextStyle(color: textColor, fontSize: 13, height: 1.4)),
       ],

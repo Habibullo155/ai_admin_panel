@@ -69,8 +69,8 @@ class _AnimatedAiAvatarState extends State<AnimatedAiAvatar> with SingleTickerPr
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        const Color(0xFF4DD0C4).withOpacity(glowOpacity),
-                        const Color(0xFF4DD0C4).withOpacity(0.0),
+                        const Color(0xFF4DD0C4).withValues(alpha: glowOpacity),
+                        const Color(0xFF4DD0C4).withValues(alpha: 0.0),
                       ],
                     ),
                   ),
@@ -94,7 +94,7 @@ class _AnimatedAiAvatarState extends State<AnimatedAiAvatar> with SingleTickerPr
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(colors: [Color(0xFF6FB1DE), Color(0xFF4DD0C4)]),
-        border: Border.all(color: Colors.white.withOpacity(0.25)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Icon(Icons.spa_rounded, size: widget.size * 0.53, color: Colors.white),
     );

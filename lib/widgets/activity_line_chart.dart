@@ -81,7 +81,7 @@ class _ActivityChartPainter extends CustomPainter {
     fillPath.lineTo(leftPadding + chartWidth, chartHeight);
     fillPath.close();
 
-    canvas.drawPath(fillPath, Paint()..color = lineColor.withOpacity(0.12));
+    canvas.drawPath(fillPath, Paint()..color = lineColor.withValues(alpha: 0.12));
     canvas.drawPath(
       path,
       Paint()

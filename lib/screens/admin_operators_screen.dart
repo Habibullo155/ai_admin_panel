@@ -225,7 +225,7 @@ class _AdminOperatorsScreenState extends State<AdminOperatorsScreen> {
   Widget _badge(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: color.withOpacity(0.18)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: color.withValues(alpha: 0.18)),
       child: Text(text, style: TextStyle(color: color, fontSize: 10.5, fontWeight: FontWeight.w600)),
     );
   }

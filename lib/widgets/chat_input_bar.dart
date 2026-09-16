@@ -135,7 +135,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: _pickedImages.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 6),
+                  separatorBuilder: (_, _) => const SizedBox(width: 6),
                   itemBuilder: (context, i) => Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -289,7 +289,7 @@ class _MicButton extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isListening ? const Color(0xFFFF6B6B).withOpacity(0.25) : context.onSurfaceFaded(0.06),
+            color: isListening ? const Color(0xFFFF6B6B).withValues(alpha: 0.25) : context.onSurfaceFaded(0.06),
           ),
           child: Icon(
             isListening ? Icons.mic_rounded : Icons.mic_none_rounded,

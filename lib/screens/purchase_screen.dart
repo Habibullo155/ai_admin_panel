@@ -249,7 +249,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> with WidgetsBindingObse
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xFF00E6A0).withOpacity(0.18),
+                            color: const Color(0xFF00E6A0).withValues(alpha: 0.18),
                           ),
                           child: const Text('текущий', style: TextStyle(color: Color(0xFF00E6A0), fontSize: 10.5)),
                         ),

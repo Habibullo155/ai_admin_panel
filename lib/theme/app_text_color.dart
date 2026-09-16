@@ -17,10 +17,10 @@ extension AppTextColor on BuildContext {
   /// текст с той же числовой прозрачностью, что и белый, на светлом фоне
   /// читается хуже.
   Color onSurfaceFaded(double opacity) {
-    if (isDarkMode) return Colors.white.withOpacity(opacity);
-    return const Color(0xFF1A1A2E).withOpacity((opacity * 1.15).clamp(0.0, 1.0));
+    if (isDarkMode) return Colors.white.withValues(alpha: opacity);
+    return const Color(0xFF1A1A2E).withValues(alpha: (opacity * 1.15).clamp(0.0, 1.0));
   }
 
   /// Граница/обводка стеклянных панелей.
-  Color get borderSubtle => isDarkMode ? Colors.white.withOpacity(0.14) : Colors.black.withOpacity(0.10);
+  Color get borderSubtle => isDarkMode ? Colors.white.withValues(alpha: 0.14) : Colors.black.withValues(alpha: 0.10);
 }

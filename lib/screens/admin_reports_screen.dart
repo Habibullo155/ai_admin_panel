@@ -151,7 +151,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: const Color(0xFFFFD166).withOpacity(0.2),
+                          color: const Color(0xFFFFD166).withValues(alpha: 0.2),
                         ),
                         child: Text(
                           '$_openCount открыто',
@@ -220,7 +220,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: (isResolved ? Colors.white24 : const Color(0xFFFFD166)).withOpacity(0.18),
+                    color: (isResolved ? Colors.white24 : const Color(0xFFFFD166)).withValues(alpha: 0.18),
                   ),
                   child: Text(
                     isResolved ? 'Разобрано' : 'Открыто',

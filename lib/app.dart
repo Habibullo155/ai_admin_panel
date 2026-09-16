@@ -5,7 +5,6 @@ import 'screens/auth_screen.dart';
 import 'screens/lock_screen.dart';
 import 'state/auth_store.dart';
 import 'state/theme_store.dart';
-import 'theme/background_variant.dart';
 
 /// Точка входа админ-приложения - НЕ содержит чат/голос/упражнения вообще,
 /// сразу после входа ведёт в AdminShellScreen. Использует тот же бэкенд

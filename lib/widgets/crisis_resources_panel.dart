@@ -21,7 +21,7 @@ class CrisisResourcesPanel extends StatelessWidget {
         children: [
           Text(
             title ?? 'Если хочется поговорить с кем-то',
-            style: TextStyle(color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600, fontSize: 13.5),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontWeight: FontWeight.w600, fontSize: 13.5),
           ),
           const SizedBox(height: 8),
           Text(
@@ -29,7 +29,7 @@ class CrisisResourcesPanel extends StatelessWidget {
             'круглосуточно и бесплатно: 8-800-100-49-94\n'
             '• Детский и подростковый телефон доверия: 8-800-2000-122 '
             '(короткий номер — 124)',
-            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5, height: 1.6),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12.5, height: 1.6),
           ),
         ],
       ),

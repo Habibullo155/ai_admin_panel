@@ -63,7 +63,7 @@ class GlassPanel extends StatelessWidget {
         final content = Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: effectiveTint.withOpacity(scaledOpacity),
+            color: effectiveTint.withValues(alpha: scaledOpacity),
             borderRadius: borderRadius,
             border: border ??
                 Border.all(
@@ -72,7 +72,7 @@ class GlassPanel extends StatelessWidget {
                 ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isLight ? 0.12 : 0.25),
+                color: Colors.black.withValues(alpha: isLight ? 0.12 : 0.25),
                 blurRadius: 30,
                 offset: const Offset(0, 12),
               ),

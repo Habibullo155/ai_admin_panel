@@ -8,7 +8,6 @@ import '../models/chat_message.dart';
 import '../models/chat_source.dart';
 import '../state/theme_store.dart';
 import '../theme/app_text_color.dart';
-import '../theme/background_variant.dart';
 import 'animated_ai_avatar.dart';
 import 'glass_panel.dart';
 import 'theme_variant_swatch.dart';
@@ -271,7 +270,7 @@ class MessageBubble extends StatelessWidget {
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.08),
+                    fillColor: Colors.white.withValues(alpha: 0.08),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                     contentPadding: const EdgeInsets.all(12),
                   ),
@@ -320,7 +319,7 @@ class MessageBubble extends StatelessWidget {
               ? [const Color(0xFF6C5CE7), const Color(0xFF00D9C0)]
               : [const Color(0xFF6FB1DE), const Color(0xFF4DD0C4)], // приглушённые сине-зелёные для ассистента
         ),
-        border: Border.all(color: Colors.white.withOpacity(0.25)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Icon(
         isUser ? Icons.person_rounded : Icons.spa_rounded,
@@ -402,7 +401,7 @@ class _SourcesBlock extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Colors.black.withOpacity(0.18),
+        color: Colors.black.withValues(alpha: 0.18),
         border: Border.all(color: context.onSurfaceFaded(0.1)),
       ),
       child: Column(

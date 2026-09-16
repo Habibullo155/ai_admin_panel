@@ -325,7 +325,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
           else
             Switch(
               value: _settings.voiceEnabled,
-              activeColor: const Color(0xFF6C5CE7),
+              activeThumbColor: const Color(0xFF6C5CE7),
               onChanged: (v) => _update(voiceEnabled: v),
             ),
         ],
@@ -554,7 +554,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             const SizedBox(width: 8),
             Switch(
               value: enabled,
-              activeColor: const Color(0xFF6C5CE7),
+              activeThumbColor: const Color(0xFF6C5CE7),
               onChanged: onToggle,
             ),
           ],
@@ -566,7 +566,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: const Color(0xFF6C5CE7),
               thumbColor: const Color(0xFF6C5CE7),
-              overlayColor: const Color(0xFF6C5CE7).withOpacity(0.2),
+              overlayColor: const Color(0xFF6C5CE7).withValues(alpha: 0.2),
               inactiveTrackColor: context.onSurfaceFaded(0.12),
             ),
             child: Slider(

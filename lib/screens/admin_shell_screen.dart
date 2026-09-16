@@ -175,7 +175,7 @@ class _AdminShellScreenState extends State<AdminShellScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 2),
                     child: Material(
-                      color: selected ? const Color(0xFF6C5CE7).withOpacity(0.16) : Colors.transparent,
+                      color: selected ? const Color(0xFF6C5CE7).withValues(alpha: 0.16) : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(10),
@@ -210,7 +210,7 @@ class _AdminShellScreenState extends State<AdminShellScreen> {
   }
 
   Widget _buildContent() {
-    final backToDashboard = () => setState(() => _section = _Section.dashboard);
+    void backToDashboard() => setState(() => _section = _Section.dashboard);
     return DecoratedBox(
       decoration: const BoxDecoration(color: Color(0xFF0F1220)),
       child: switch (_section) {
@@ -362,7 +362,7 @@ class _DashboardPanelState extends State<_DashboardPanel> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [const Color(0xFF6C5CE7).withOpacity(0.18), const Color(0xFF00B4D8).withOpacity(0.1)],
+          colors: [const Color(0xFF6C5CE7).withValues(alpha: 0.18), const Color(0xFF00B4D8).withValues(alpha: 0.1)],
         ),
       ),
       child: Row(
@@ -567,7 +567,7 @@ class _DashboardPanelState extends State<_DashboardPanel> {
               Container(
                 width: 28,
                 height: 28,
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: item.$4.withOpacity(0.16)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: item.$4.withValues(alpha: 0.16)),
                 child: Icon(item.$3, size: 15, color: item.$4),
               ),
               const SizedBox(height: 8),

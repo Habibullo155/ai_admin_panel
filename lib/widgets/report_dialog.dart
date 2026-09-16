@@ -102,7 +102,7 @@ class _ReportDialogState extends State<_ReportDialog> {
         Text(
           'Спасибо — мы посмотрим этот ответ. Текст вопроса и ответа передан '
           'вместе с жалобой, чтобы можно было сразу разобраться, не переспрашивая.',
-          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.4),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13, height: 1.4),
         ),
         const SizedBox(height: 16),
         Align(
@@ -130,7 +130,7 @@ class _ReportDialogState extends State<_ReportDialog> {
         Text(
           'Вопрос и ответ, на который жалуешься, будут переданы вместе с '
           'жалобой — иначе не получится разобраться, что именно пошло не так.',
-          style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12.5, height: 1.4),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.55), fontSize: 12.5, height: 1.4),
         ),
         const SizedBox(height: 14),
         TextField(
@@ -140,11 +140,11 @@ class _ReportDialogState extends State<_ReportDialog> {
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white.withOpacity(0.08),
+            fillColor: Colors.white.withValues(alpha: 0.08),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
             contentPadding: const EdgeInsets.all(12),
             hintText: 'Что не так с этим ответом? (необязательно)',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
           ),
         ),
         if (_error != null) ...[
@@ -157,7 +157,7 @@ class _ReportDialogState extends State<_ReportDialog> {
           children: [
             TextButton(
               onPressed: _isBusy ? null : () => Navigator.of(context).pop(),
-              child: Text('Отмена', style: TextStyle(color: Colors.white.withOpacity(0.6))),
+              child: Text('Отмена', style: TextStyle(color: Colors.white.withValues(alpha: 0.6))),
             ),
             const SizedBox(width: 8),
             FilledButton(

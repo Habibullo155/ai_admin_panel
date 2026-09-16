@@ -251,7 +251,7 @@ class _AdminPaymentPanelState extends State<AdminPaymentPanel> {
     return Row(
       children: [
         Expanded(child: Text(label, style: TextStyle(color: context.onSurface, fontSize: 14))),
-        Switch(value: value, activeColor: const Color(0xFF6C5CE7), onChanged: onChanged),
+        Switch(value: value, activeThumbColor: const Color(0xFF6C5CE7), onChanged: onChanged),
       ],
     );
   }

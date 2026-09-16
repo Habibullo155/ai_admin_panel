@@ -58,7 +58,7 @@ class _AdminSqlPanelState extends State<AdminSqlPanel> {
               content: Text(
                 'Этот запрос похож на изменение данных или структуры базы. '
                 'Отменить будет нельзя.',
-                style: TextStyle(color: Colors.white.withOpacity(0.75)),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.75)),
               ),
               actions: [
                 TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Отмена')),
@@ -100,8 +100,8 @@ class _AdminSqlPanelState extends State<AdminSqlPanel> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: const Color(0xFFFF6B6B).withOpacity(0.14),
-            border: Border.all(color: const Color(0xFFFF6B6B).withOpacity(0.4)),
+            color: const Color(0xFFFF6B6B).withValues(alpha: 0.14),
+            border: Border.all(color: const Color(0xFFFF6B6B).withValues(alpha: 0.4)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +168,7 @@ class _AdminSqlPanelState extends State<AdminSqlPanel> {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: const Color(0xFFFF6B6B).withOpacity(0.1),
+              color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
             ),
             child: Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13, fontFamily: 'monospace')),
           ),

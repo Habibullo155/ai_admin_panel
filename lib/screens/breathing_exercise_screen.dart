@@ -133,7 +133,7 @@ class _BreathingExerciseScreenState extends State<BreathingExerciseScreen>
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF4DD0C4).withOpacity(0.35),
+                                  color: const Color(0xFF4DD0C4).withValues(alpha: 0.35),
                                   blurRadius: 40,
                                 ),
                               ],
@@ -179,7 +179,7 @@ class _BreathingExerciseScreenState extends State<BreathingExerciseScreen>
                     'Простая техника саморегуляции дыхания — не заменяет '
                     'профессиональную помощь. Если чувствуешь головокружение — '
                     'останови упражнение и дыши в привычном темпе.',
-                    style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5, height: 1.4),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11.5, height: 1.4),
                   ),
                 ),
               ),

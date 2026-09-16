@@ -242,13 +242,13 @@ class _AdminSystemScreenState extends State<AdminSystemScreen> {
           const SizedBox(height: 4),
           Text(
             'pg_dump в сжатом формате (-Fc). Может занять до нескольких минут в зависимости от размера базы.',
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
           ),
           const SizedBox(height: 12),
           if (_backups.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Text('Бэкапов пока нет.', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+              child: Text('Бэкапов пока нет.', style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
             )
           else
             ..._backups.map(_buildBackupTile),
@@ -265,7 +265,7 @@ class _AdminSystemScreenState extends State<AdminSystemScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
         ),
         child: Row(
           children: [
@@ -277,7 +277,7 @@ class _AdminSystemScreenState extends State<AdminSystemScreen> {
                   const SizedBox(height: 2),
                   Text(
                     '${backup.formattedSize} · ${DateFormat('dd.MM.yyyy HH:mm').format(backup.createdAt.toLocal())}',
-                    style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11.5),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11.5),
                   ),
                 ],
               ),
@@ -378,7 +378,7 @@ class _StatusGrid extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withOpacity(0.5))),
+                    Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: 0.5))),
                     const SizedBox(height: 2),
                     Text(value, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
@@ -442,7 +442,7 @@ class _RestoreConfirmDialogState extends State<_RestoreConfirmDialog> {
               style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
             ),
             const SizedBox(height: 16),
-            Text('Чтобы продолжить, напечатай имя файла:', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5)),
+            Text('Чтобы продолжить, напечатай имя файла:', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12.5)),
             const SizedBox(height: 4),
             SelectableText(widget.backup.filename, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
@@ -452,15 +452,15 @@ class _RestoreConfirmDialogState extends State<_RestoreConfirmDialog> {
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.08),
+                fillColor: Colors.white.withValues(alpha: 0.08),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 hintText: 'Имя файла бэкапа',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
               ),
             ),
             const SizedBox(height: 12),
-            Text('И свой пароль администратора:', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5)),
+            Text('И свой пароль администратора:', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12.5)),
             const SizedBox(height: 4),
             TextField(
               controller: _passwordController,
@@ -469,11 +469,11 @@ class _RestoreConfirmDialogState extends State<_RestoreConfirmDialog> {
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.08),
+                fillColor: Colors.white.withValues(alpha: 0.08),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 hintText: 'Пароль',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                 suffixIcon: IconButton(
                   icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: Colors.white38, size: 20),
                   onPressed: () => setState(() => _obscurePassword = !_obscurePassword),

@@ -142,7 +142,7 @@ class _AdminTariffsPanelState extends State<AdminTariffsPanel> {
                 ),
                 Switch(
                   value: tier.isActive,
-                  activeColor: const Color(0xFF6C5CE7),
+                  activeThumbColor: const Color(0xFF6C5CE7),
                   onChanged: (_) => _toggleActive(tier),
                 ),
               ],

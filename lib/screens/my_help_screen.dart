@@ -255,7 +255,7 @@ class _MyHelpScreenState extends State<MyHelpScreen> {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: color.withOpacity(0.18)),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: color.withValues(alpha: 0.18)),
                     child: Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),
                   ),
                 ],
