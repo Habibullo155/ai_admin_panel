@@ -108,7 +108,7 @@ class _AdminBlogEditorScreenState extends State<AdminBlogEditorScreen> {
     }
     final text = _contentController.text;
     final selected = text.substring(selection.start, selection.end);
-    final hex = color.toARGB32().toRadixString(16).substring(2).toUpperCase();
+    final hex = color.value.toRadixString(16).substring(2).toUpperCase();
     final marker = '{{#$hex}}$selected{{/}}';
     final newText = text.replaceRange(selection.start, selection.end, marker);
     _contentController.value = TextEditingValue(

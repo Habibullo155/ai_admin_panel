@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/sql_query_result.dart';
 
 class SqlAdminException implements Exception {
@@ -12,7 +14,7 @@ class SqlAdminException implements Exception {
 }
 
 class SqlAdminService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Future<SqlQueryResult> execute({
     required String baseUrl,

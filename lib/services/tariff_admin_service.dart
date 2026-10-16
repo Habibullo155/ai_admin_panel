@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/subscription_tier.dart';
 
 class TariffAdminException implements Exception {
@@ -12,7 +14,7 @@ class TariffAdminException implements Exception {
 }
 
 class TariffAdminService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Map<String, String> _headers(String token) => {
         'Authorization': 'Bearer $token',
@@ -51,6 +53,8 @@ class TariffAdminService {
     int? priceUsdCents,
     int? monthlyTokenLimit,
     bool clearMonthlyTokenLimit = false,
+    int? proModelMonthlyTokens,
+    bool clearProModelMonthlyTokens = false,
     int? dailyFreeRequests,
     bool clearDailyFreeRequests = false,
     bool? isActive,
@@ -66,6 +70,11 @@ class TariffAdminService {
       body['clear_monthly_token_limit'] = true;
     } else if (monthlyTokenLimit != null) {
       body['monthly_token_limit'] = monthlyTokenLimit;
+    }
+    if (clearProModelMonthlyTokens) {
+      body['clear_pro_model_monthly_tokens'] = true;
+    } else if (proModelMonthlyTokens != null) {
+      body['pro_model_monthly_tokens'] = proModelMonthlyTokens;
     }
     if (clearDailyFreeRequests) {
       body['clear_daily_free_requests'] = true;

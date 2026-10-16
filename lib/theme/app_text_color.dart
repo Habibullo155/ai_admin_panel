@@ -12,7 +12,7 @@ extension AppTextColor on BuildContext {
   Color get onSurface => isDarkMode ? Colors.white : const Color(0xFF1A1A2E);
 
   /// Приглушённый текст/иконки — тот же принцип, что и
-  /// `Colors.white.withOpacity(x)`, но теперь адаптируется под тему. В
+  /// `Colors.white.withValues(alpha: x)`, но теперь адаптируется под тему. В
   /// светлой теме берём чуть больший множитель непрозрачности — тёмный
   /// текст с той же числовой прозрачностью, что и белый, на светлом фоне
   /// читается хуже.

@@ -142,7 +142,7 @@ class _AdminTariffsPanelState extends State<AdminTariffsPanel> {
                 ),
                 Switch(
                   value: tier.isActive,
-                  activeThumbColor: const Color(0xFF6C5CE7),
+                  activeColor: const Color(0xFF6C5CE7),
                   onChanged: (_) => _toggleActive(tier),
                 ),
               ],
@@ -161,10 +161,19 @@ class _AdminTariffsPanelState extends State<AdminTariffsPanel> {
               tier.dailyFreeRequests != null
                   ? 'Дневной лимит: ${tier.dailyFreeRequests} запросов/день'
                   : tier.monthlyTokenLimit != null
-                      ? 'Месячный лимит: ${tier.monthlyTokenLimit} токенов'
-                      : 'Без лимита токенов',
+                      ? 'Обычный ИИ: ${tier.monthlyTokenLimit} токенов/мес'
+                      : 'Обычный ИИ: без лимита',
               style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5),
             ),
+            if (tier.dailyFreeRequests == null) ...[
+              const SizedBox(height: 2),
+              Text(
+                tier.proModelMonthlyTokens != null
+                    ? 'Про ИИ: ${tier.proModelMonthlyTokens} токенов/мес'
+                    : 'Про ИИ: недоступен тарифу',
+                style: TextStyle(color: context.onSurfaceFaded(0.5), fontSize: 12.5),
+              ),
+            ],
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerRight,
@@ -197,6 +206,7 @@ class _EditTierDialogState extends State<_EditTierDialog> {
   late final _priceRubController = TextEditingController(text: (widget.tier.priceRubCents / 100).toStringAsFixed(0));
   late final _priceUsdController = TextEditingController(text: (widget.tier.priceUsdCents / 100).toStringAsFixed(2));
   late final _tokenLimitController = TextEditingController(text: widget.tier.monthlyTokenLimit?.toString() ?? '');
+  late final _proTokenLimitController = TextEditingController(text: widget.tier.proModelMonthlyTokens?.toString() ?? '');
   late final _dailyRequestsController = TextEditingController(text: widget.tier.dailyFreeRequests?.toString() ?? '');
   late final _durationController = TextEditingController(text: widget.tier.durationDays.toString());
   bool _isSaving = false;
@@ -209,6 +219,7 @@ class _EditTierDialogState extends State<_EditTierDialog> {
     _priceRubController.dispose();
     _priceUsdController.dispose();
     _tokenLimitController.dispose();
+    _proTokenLimitController.dispose();
     _dailyRequestsController.dispose();
     _durationController.dispose();
     super.dispose();
@@ -223,6 +234,7 @@ class _EditTierDialogState extends State<_EditTierDialog> {
     });
     try {
       final tokenLimitText = _tokenLimitController.text.trim();
+      final proTokenLimitText = _proTokenLimitController.text.trim();
       final dailyRequestsText = _dailyRequestsController.text.trim();
       final updated = await widget.service.update(
         baseUrl: widget.authStore.baseUrl,
@@ -234,6 +246,8 @@ class _EditTierDialogState extends State<_EditTierDialog> {
         priceUsdCents: ((double.tryParse(_priceUsdController.text.trim()) ?? 0) * 100).round(),
         monthlyTokenLimit: tokenLimitText.isEmpty ? null : int.tryParse(tokenLimitText),
         clearMonthlyTokenLimit: tokenLimitText.isEmpty,
+        proModelMonthlyTokens: proTokenLimitText.isEmpty ? null : int.tryParse(proTokenLimitText),
+        clearProModelMonthlyTokens: proTokenLimitText.isEmpty,
         dailyFreeRequests: dailyRequestsText.isEmpty ? null : int.tryParse(dailyRequestsText),
         clearDailyFreeRequests: dailyRequestsText.isEmpty,
         durationDays: int.tryParse(_durationController.text.trim()),
@@ -280,9 +294,16 @@ class _EditTierDialogState extends State<_EditTierDialog> {
                 const SizedBox(height: 10),
                 _buildField(
                   _tokenLimitController,
-                  'Месячный лимит токенов',
+                  'Месячный лимит токенов (обычный ИИ)',
                   keyboardType: TextInputType.number,
                   hint: 'пусто = без лимита',
+                ),
+                const SizedBox(height: 10),
+                _buildField(
+                  _proTokenLimitController,
+                  'Месячный лимит токенов (про ИИ)',
+                  keyboardType: TextInputType.number,
+                  hint: 'пусто = про-модель недоступна тарифу',
                 ),
                 const SizedBox(height: 10),
                 _buildField(

@@ -104,7 +104,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            _isRegisterMode ? 'Создать аккаунт' : 'Вход в AI Chat',
+            _isRegisterMode ? 'Создать аккаунт' : 'Вход в панель LOMALU',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: context.onSurface,

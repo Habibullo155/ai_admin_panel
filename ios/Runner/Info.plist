@@ -6,8 +6,10 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Вход в админку по Face ID</string>
 	<key>CFBundleDisplayName</key>
-	<string>Ai Admin Panel</string>
+	<string>LOMALU Админ</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

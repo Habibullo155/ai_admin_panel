@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 class AppSettingsException implements Exception {
   final String message;
   AppSettingsException(this.message);
@@ -9,10 +11,27 @@ class AppSettingsException implements Exception {
   String toString() => message;
 }
 
+/// Голос включённого на сервере провайдера озвучки (Vosk или ElevenLabs).
+class VoiceOption {
+  final String id;
+  final String label;
+  final bool isFemale;
+  const VoiceOption({required this.id, required this.label, required this.isFemale});
+
+  static VoiceOption fromJson(Map<String, dynamic> j) => VoiceOption(
+        id: j['id'] as String,
+        label: j['label'] as String? ?? j['id'] as String,
+        isFemale: j['gender'] == 'female',
+      );
+}
+
 class PublicAppSettings {
   final bool voiceEnabled;
   final bool cloudTtsEnabled;
-  final String? ttsProvider; // "elevenlabs" | null
+  final String? ttsProvider; // "vosk" | "elevenlabs" | null
+  // темп речи Vosk (1.0 - обычный)
+  final double speechRate;
+  final List<VoiceOption> availableVoices;
   final String defaultVoice;
   final double? voiceStability; // null = не задано, ElevenLabs сам решает
   final double? voiceSimilarityBoost;
@@ -23,6 +42,8 @@ class PublicAppSettings {
     this.defaultVoice = '21m00Tcm4TlvDq8ikWAM',
     this.voiceStability,
     this.voiceSimilarityBoost,
+    this.speechRate = 1.0,
+    this.availableVoices = const [],
   });
 
   static PublicAppSettings fromJson(Map<String, dynamic> data) => PublicAppSettings(
@@ -32,6 +53,11 @@ class PublicAppSettings {
         defaultVoice: data['default_voice'] as String? ?? '21m00Tcm4TlvDq8ikWAM',
         voiceStability: (data['voice_stability'] as num?)?.toDouble(),
         voiceSimilarityBoost: (data['voice_similarity_boost'] as num?)?.toDouble(),
+        speechRate: (data['voice_speech_rate'] as num?)?.toDouble() ?? 1.0,
+        availableVoices: [
+          for (final v in (data['available_voices'] as List? ?? const []))
+            VoiceOption.fromJson(v as Map<String, dynamic>),
+        ],
       );
 }
 
@@ -53,11 +79,22 @@ class ModelSettings {
   final double topP;
   final ResponseLength responseLength;
   final bool themeControlEnabled;
+  // pro-модель (OLLAMA_PRO_MODEL): выключатель + что реально в .env
+  final bool proModelEnabled;
+  final bool crisisClassifierEnabled;
+  final bool proModelConfigured;
+  final String baseModelName;
+  final String proModelName;
   const ModelSettings({
     this.temperature = 1.0,
     this.topP = 0.95,
     this.responseLength = ResponseLength.balanced,
     this.themeControlEnabled = true,
+    this.proModelEnabled = true,
+    this.crisisClassifierEnabled = true,
+    this.proModelConfigured = false,
+    this.baseModelName = '',
+    this.proModelName = '',
   });
 
   String get responseLengthKey => responseLength.name;
@@ -70,11 +107,16 @@ class ModelSettings {
           orElse: () => ResponseLength.balanced,
         ),
         themeControlEnabled: data['theme_control_enabled'] as bool? ?? true,
+        proModelEnabled: data['pro_model_enabled'] as bool? ?? true,
+        crisisClassifierEnabled: data['crisis_classifier_enabled'] as bool? ?? true,
+        proModelConfigured: data['pro_model_configured'] as bool? ?? false,
+        baseModelName: data['base_model_name'] as String? ?? '',
+        proModelName: data['pro_model_name'] as String? ?? '',
       );
 }
 
 class AppSettingsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   /// Если сервер недоступен — не блокируем голосовые функции ими: базовый
   /// голос на устройстве работает независимо от бэкенда, а облачную
@@ -105,8 +147,10 @@ class AppSettingsService {
     double? voiceSimilarityBoost,
     bool clearVoiceStability = false,
     bool clearVoiceSimilarityBoost = false,
+    double? voiceSpeechRate,
   }) async {
     final body = <String, dynamic>{};
+    if (voiceSpeechRate != null) body['voice_speech_rate'] = voiceSpeechRate;
     if (voiceEnabled != null) body['voice_enabled'] = voiceEnabled;
     if (defaultVoice != null) body['default_voice'] = defaultVoice;
     if (clearVoiceStability) {
@@ -221,12 +265,16 @@ class AppSettingsService {
     double? topP,
     ResponseLength? responseLength,
     bool? themeControlEnabled,
+    bool? proModelEnabled,
+    bool? crisisClassifierEnabled,
   }) async {
     final body = <String, dynamic>{};
     if (temperature != null) body['temperature'] = temperature;
     if (topP != null) body['top_p'] = topP;
     if (responseLength != null) body['response_length'] = responseLength.name;
     if (themeControlEnabled != null) body['theme_control_enabled'] = themeControlEnabled;
+    if (proModelEnabled != null) body['pro_model_enabled'] = proModelEnabled;
+    if (crisisClassifierEnabled != null) body['crisis_classifier_enabled'] = crisisClassifierEnabled;
 
     final res = await _client
         .patch(

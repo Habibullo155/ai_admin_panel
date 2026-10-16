@@ -188,7 +188,7 @@ class _AdminOAuthPanelState extends State<AdminOAuthPanel> {
                 ),
                 Switch(
                   value: provider.enabled,
-                  activeThumbColor: const Color(0xFF6C5CE7),
+                  activeColor: const Color(0xFF6C5CE7),
                   // выключенный провайдер (не реализован целиком) нельзя
                   // включить - честнее не дать переключить, чем притворяться
                   onChanged: provider.isFlowImplemented ? (_) => _toggleEnabled(provider) : null,

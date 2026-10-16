@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
-import '../models/cloud_voice.dart';
 import '../services/app_settings_service.dart';
 import '../services/cloud_tts_service.dart';
 import '../state/auth_store.dart';
@@ -38,6 +37,15 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
   double _similarityBoost = 0.5;
   bool _stabilityEnabled = false; // выключено = вообще не отправлять параметр
   bool _similarityBoostEnabled = false;
+  // темп речи Vosk (бесплатная озвучка на сервере)
+  double _speechRate = 1.0;
+  // голос, который сейчас проигрывается превью (кнопка ▶ в списке)
+  String? _previewingVoice;
+
+  static const _previewPhrase = 'Привет! Я рядом, если захочется поговорить.';
+
+  bool get _isVosk => _settings.ttsProvider == 'vosk';
+  bool get _isElevenLabs => _settings.ttsProvider == 'elevenlabs';
   bool _isPreviewPlaying = false;
 
   @override
@@ -65,7 +73,31 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
       _similarityBoostEnabled = settings.voiceSimilarityBoost != null;
       _stability = settings.voiceStability ?? 0.5;
       _similarityBoost = settings.voiceSimilarityBoost ?? 0.5;
+      _speechRate = settings.speechRate;
     });
+  }
+
+  /// Прослушать конкретный голос из списка - без сохранения
+  Future<void> _previewVoice(String voiceId) async {
+    final token = widget.authStore.token;
+    if (token == null || _previewingVoice != null) return;
+    setState(() {
+      _previewingVoice = voiceId;
+      _error = null;
+    });
+    try {
+      final bytes = await _cloudTts.synthesize(
+        baseUrl: widget.authStore.baseUrl,
+        token: token,
+        text: _previewPhrase,
+        voiceName: voiceId,
+      );
+      if (mounted) await _previewPlayer.play(BytesSource(bytes));
+    } on CloudTtsException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _previewingVoice = null);
+    }
   }
 
   /// Сохраняет текущие значения ползунков (или их отсутствие) и сразу
@@ -84,10 +116,12 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
       final updated = await _service.updateSettings(
         baseUrl: widget.authStore.baseUrl,
         token: token,
-        voiceStability: _stabilityEnabled ? _stability : null,
-        voiceSimilarityBoost: _similarityBoostEnabled ? _similarityBoost : null,
-        clearVoiceStability: !_stabilityEnabled,
-        clearVoiceSimilarityBoost: !_similarityBoostEnabled,
+        // у Vosk свой параметр - темп; стабильность/похожесть - только ElevenLabs
+        voiceSpeechRate: _isVosk ? _speechRate : null,
+        voiceStability: _isElevenLabs && _stabilityEnabled ? _stability : null,
+        voiceSimilarityBoost: _isElevenLabs && _similarityBoostEnabled ? _similarityBoost : null,
+        clearVoiceStability: _isElevenLabs && !_stabilityEnabled,
+        clearVoiceSimilarityBoost: _isElevenLabs && !_similarityBoostEnabled,
       );
       if (mounted) setState(() => _settings = updated);
 
@@ -95,7 +129,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
       final bytes = await _cloudTts.synthesize(
         baseUrl: widget.authStore.baseUrl,
         token: token,
-        text: 'Привет! Так теперь звучит голос ассистента.',
+        text: _previewPhrase,
         voiceName: _settings.defaultVoice,
       );
       if (mounted) await _previewPlayer.play(BytesSource(bytes));
@@ -197,6 +231,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
           _similarityBoostEnabled = reset.voiceSimilarityBoost != null;
           _stability = reset.voiceStability ?? 0.5;
           _similarityBoost = reset.voiceSimilarityBoost ?? 0.5;
+          _speechRate = reset.speechRate;
         });
       }
     } on AppSettingsException catch (e) {
@@ -290,9 +325,15 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              configured
-                  ? 'ElevenLabs настроен (${_settings.ttsProvider ?? "elevenlabs"}) — используется вместо голоса устройства.'
-                  : 'Ключ ElevenLabs не настроен в .env — играет только голос устройства, список ниже недоступен.',
+              switch (_settings.ttsProvider) {
+                'vosk' => 'Бесплатная озвучка Vosk работает на сервере (без ключей и '
+                    'регистрации) — используется вместо голоса устройства.',
+                'elevenlabs' => 'Озвучка ElevenLabs (платная, ключ в .env) — используется '
+                    'вместо голоса устройства.',
+                _ => 'Серверная озвучка выключена — у пользователей играет голос '
+                    'устройства. Включить: TTS_PROVIDER=auto и пакет vosk-tts '
+                    '(см. .env.example).',
+              },
               style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5, height: 1.4),
             ),
           ),
@@ -325,7 +366,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
           else
             Switch(
               value: _settings.voiceEnabled,
-              activeThumbColor: const Color(0xFF6C5CE7),
+              activeColor: const Color(0xFF6C5CE7),
               onChanged: (v) => _update(voiceEnabled: v),
             ),
         ],
@@ -353,13 +394,14 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             borderRadius: BorderRadius.circular(14),
             padding: const EdgeInsets.all(14),
             child: Text(
-              'Недоступно — ключ ElevenLabs не настроен (см. панель выше).',
+              'Недоступно — серверная озвучка выключена (см. панель выше).',
               style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
             ),
           )
         else
-          ...elevenLabsCloudVoices.map((v) {
-            final selected = v.name == _settings.defaultVoice;
+          ..._settings.availableVoices.map((v) {
+            final selected = v.id == _settings.defaultVoice;
+            final previewing = _previewingVoice == v.id;
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: GlassPanel(
@@ -370,7 +412,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(14),
-                    onTap: _isSaving ? null : () => _update(defaultVoice: v.name),
+                    onTap: _isSaving ? null : () => _update(defaultVoice: v.id),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       child: Row(
@@ -381,7 +423,24 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                             size: 18,
                           ),
                           const SizedBox(width: 10),
-                          Expanded(child: Text(v.label, style: TextStyle(color: context.onSurface, fontSize: 13.5))),
+                          Expanded(
+                            child: Text(
+                              '${v.label} (${v.isFemale ? 'женский' : 'мужской'})',
+                              style: TextStyle(color: context.onSurface, fontSize: 13.5),
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: 'Прослушать',
+                            visualDensity: VisualDensity.compact,
+                            onPressed: _previewingVoice == null ? () => _previewVoice(v.id) : null,
+                            icon: previewing
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF6C5CE7)),
+                                  )
+                                : Icon(Icons.play_circle_outline_rounded, color: context.onSurfaceFaded(0.6)),
+                          ),
                           if (selected) const Icon(Icons.check_circle_rounded, color: Color(0xFF00E6A0), size: 18),
                         ],
                       ),
@@ -438,15 +497,16 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'СТАБИЛЬНОСТЬ И ПОХОЖЕСТЬ ГОЛОСА',
+          _isVosk ? 'ТЕМП РЕЧИ' : 'СТАБИЛЬНОСТЬ И ПОХОЖЕСТЬ ГОЛОСА',
           style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
-          'Необязательно — по умолчанию ElevenLabs сам решает. Значения '
-          'здесь можно только услышать самому и подобрать на слух (диапазон '
-          '0.0-1.0 подтверждён из официальной документации ElevenLabs, но '
-          'точное звуковое отличие каждого значения — нет).',
+          _isVosk
+              ? 'Для психолога часто уместна чуть более медленная, спокойная речь '
+                  '(0.9). Применяется ко всем пользователям.'
+              : 'Необязательно — по умолчанию ElevenLabs сам решает. Значения '
+                  'подбираются на слух (диапазон 0.0-1.0 из документации ElevenLabs).',
           style: TextStyle(color: context.onSurfaceFaded(0.35), fontSize: 11.5, height: 1.4),
         ),
         const SizedBox(height: 10),
@@ -456,7 +516,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             borderRadius: BorderRadius.circular(14),
             padding: const EdgeInsets.all(14),
             child: Text(
-              'Недоступно — ключ ElevenLabs не настроен.',
+              'Недоступно — серверная озвучка выключена.',
               style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 12),
             ),
           )
@@ -468,6 +528,32 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (_isVosk) ...[
+                  Row(
+                    children: [
+                      Icon(Icons.speed_rounded, color: context.onSurfaceFaded(0.6), size: 18),
+                      const SizedBox(width: 8),
+                      Text('Темп', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
+                      const Spacer(),
+                      Text(
+                        _speechRate == 1.0
+                            ? 'обычный'
+                            : _speechRate < 1.0
+                                ? 'медленнее (${_speechRate.toStringAsFixed(2)})'
+                                : 'быстрее (${_speechRate.toStringAsFixed(2)})',
+                        style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: _speechRate,
+                    min: 0.7,
+                    max: 1.3,
+                    divisions: 12,
+                    activeColor: const Color(0xFF6C5CE7),
+                    onChanged: (v) => setState(() => _speechRate = double.parse(v.toStringAsFixed(2))),
+                  ),
+                ] else ...[
                 _voiceParamRow(
                   label: 'Стабильность',
                   icon: Icons.graphic_eq_rounded,
@@ -485,6 +571,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
                   onToggle: (v) => setState(() => _similarityBoostEnabled = v),
                   onChanged: (v) => setState(() => _similarityBoost = v),
                 ),
+                ],
                 const SizedBox(height: 16),
                 Material(
                   color: Colors.transparent,
@@ -554,7 +641,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
             const SizedBox(width: 8),
             Switch(
               value: enabled,
-              activeThumbColor: const Color(0xFF6C5CE7),
+              activeColor: const Color(0xFF6C5CE7),
               onChanged: onToggle,
             ),
           ],

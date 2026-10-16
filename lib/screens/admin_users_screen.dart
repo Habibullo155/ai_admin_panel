@@ -773,7 +773,7 @@ class _CreateUserSheetState extends State<_CreateUserSheet> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   value: _isOperator,
                   onChanged: (v) => setState(() => _isOperator = v),
-                  activeThumbColor: const Color(0xFF00E6A0),
+                  activeColor: const Color(0xFF00E6A0),
                   title: Text('Доступ к живой помощи', style: TextStyle(color: context.onSurface, fontSize: 13.5)),
                   subtitle: Text(
                     'Сможет видеть очередь заявок и подключаться к чатам — например, для врача/оператора.',

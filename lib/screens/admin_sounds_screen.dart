@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../models/sound_asset.dart';
@@ -86,12 +87,19 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
       allowedExtensions: ['mp3', 'wav'],
     );
     if (file == null) return;
-    final Uint8List bytes;
-    try {
-      bytes = await file.readAsBytes();
-    } catch (_) {
-      setState(() => _error = 'Не удалось прочитать файл.');
-      return;
+    // на вебе file.path всегда null (доступ к файлу только через байты -
+    // так работает File API браузера) - там читаем байты как раньше.
+    // На мобильных/десктопе путь есть - используем его напрямую в
+    // upload() без предварительного readAsBytes() здесь вообще, чтобы
+    // не грузить файл в память дважды до того, как он вообще нужен
+    Uint8List? bytes;
+    if (kIsWeb || file.path == null) {
+      try {
+        bytes = await file.readAsBytes();
+      } catch (_) {
+        setState(() => _error = 'Не удалось прочитать файл.');
+        return;
+      }
     }
 
     final token = widget.authStore.token;
@@ -107,6 +115,7 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
         title: title,
         category: _uploadCategory,
         bytes: bytes,
+        filePath: file.path,
         filename: file.name,
       );
       _titleController.clear();

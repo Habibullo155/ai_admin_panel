@@ -1,6 +1,10 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
+
+import 'pinned_http_client.dart';
 
 import '../models/blog_post.dart';
 
@@ -12,7 +16,7 @@ class BlogException implements Exception {
 }
 
 class BlogService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Map<String, String> _headers(String token) => {
         'Authorization': 'Bearer $token',
@@ -38,7 +42,9 @@ class BlogService {
     if (res.statusCode >= 400) {
       throw BlogException(_extractError(res.body) ?? 'Не удалось загрузить блог.');
     }
-    return (jsonDecode(res.body) as List<dynamic>)
+    // compute() - разбор JSON синхронно на главном потоке заметно
+        // подвешивает интерфейс на больших списках - изолят убирает это из UI-потока
+        return ((await compute(jsonDecode, res.body)) as List<dynamic>)
         .map((e) => BlogPostSummary.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -53,6 +59,16 @@ class BlogService {
     return BlogPost.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
   }
 
+  Future<Uint8List> fetchCoverBytes({required String baseUrl, required String token, required int postId}) async {
+    final res = await _client
+        .get(Uri.parse('$baseUrl/api/blog/posts/$postId/cover'), headers: _headers(token))
+        .timeout(const Duration(seconds: 20));
+    if (res.statusCode >= 400) {
+      throw BlogException('Не удалось загрузить обложку (код ${res.statusCode}).');
+    }
+    return res.bodyBytes;
+  }
+
   // --- Admin-only ---
 
   Future<List<BlogPostSummary>> adminListPosts({required String baseUrl, required String token}) async {
@@ -62,7 +78,9 @@ class BlogService {
     if (res.statusCode >= 400) {
       throw BlogException(_extractError(res.body) ?? 'Не удалось загрузить список постов.');
     }
-    return (jsonDecode(res.body) as List<dynamic>)
+    // compute() - разбор JSON синхронно на главном потоке заметно
+        // подвешивает интерфейс на больших списках - изолят убирает это из UI-потока
+        return ((await compute(jsonDecode, res.body)) as List<dynamic>)
         .map((e) => BlogPostSummary.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -163,7 +181,9 @@ class BlogService {
     if (res.statusCode >= 400) {
       throw BlogException(_extractError(res.body) ?? 'Не удалось загрузить комментарии.');
     }
-    return (jsonDecode(res.body) as List<dynamic>)
+    // compute() - разбор JSON синхронно на главном потоке заметно
+        // подвешивает интерфейс на больших списках - изолят убирает это из UI-потока
+        return ((await compute(jsonDecode, res.body)) as List<dynamic>)
         .map((e) => BlogComment.fromJson(e as Map<String, dynamic>))
         .toList();
   }

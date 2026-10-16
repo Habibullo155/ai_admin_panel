@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/rag_document.dart';
 
 class DocumentsException implements Exception {
@@ -13,7 +15,7 @@ class DocumentsException implements Exception {
 }
 
 class DocumentsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Map<String, String> _authHeader(String token) => {'Authorization': 'Bearer $token'};
 
@@ -93,6 +95,19 @@ class DocumentsService {
       throw DocumentsException(_extractDetail(res.body) ?? 'Ошибка загрузки документа (код ${res.statusCode}).');
     }
     return RagDocument.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  }
+
+  /// Пересчитать эмбеддинги всех книг (после смены модели эмбеддингов
+  /// или для книг, загруженных до префиксов nomic). Возвращает число
+  /// фрагментов.
+  Future<int> reindex({required String baseUrl, required String token}) async {
+    final res = await _client
+        .post(Uri.parse('$baseUrl/api/admin/documents/reindex'), headers: _authHeader(token))
+        .timeout(const Duration(minutes: 30));
+    if (res.statusCode >= 400) {
+      throw DocumentsException(_extractDetail(res.body) ?? 'Не удалось переиндексировать (код ${res.statusCode}).');
+    }
+    return (jsonDecode(res.body) as Map<String, dynamic>)['chunks'] as int? ?? 0;
   }
 
   Future<void> delete({required String baseUrl, required String token, required int documentId}) async {

@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+
+import 'pinned_http_client.dart';
 
 import '../models/sound_asset.dart';
 
@@ -13,7 +16,7 @@ class SoundsException implements Exception {
 }
 
 class SoundsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   String? _extractError(String body) {
     try {
@@ -48,20 +51,35 @@ class SoundsService {
     return (jsonDecode(res.body) as List<dynamic>).map((e) => SoundAsset.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  /// bytes ИЛИ filePath - ровно один должен быть передан. filePath (путь
+  /// на диске, недоступен на вебе) предпочтительнее: MultipartFile.fromPath
+  /// читает файл ПОТОКОВО прямо во время отправки, не загружая его
+  /// целиком в память заранее. Раньше единственный вариант - bytes -
+  /// требовал прочитать весь файл (для звука это могло быть до 20 МБ,
+  /// см. лимит бэкенда) в память ДО начала отправки, да ещё раз
+  /// скопировать его при multipart-кодировании запроса.
   Future<SoundAsset> upload({
     required String baseUrl,
     required String token,
     required String title,
     required SoundCategory category,
-    required Uint8List bytes,
+    Uint8List? bytes,
+    String? filePath,
     required String filename,
   }) async {
+    assert(bytes != null || filePath != null, 'нужно передать bytes или filePath');
     final uri = Uri.parse('$baseUrl/api/sounds/admin');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..fields['title'] = title
-      ..fields['category'] = soundCategoryToString(category)
-      ..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename));
+      ..fields['category'] = soundCategoryToString(category);
+    if (!kIsWeb && filePath != null) {
+      request.files.add(await http.MultipartFile.fromPath('file', filePath, filename: filename));
+    } else if (bytes != null) {
+      request.files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename));
+    } else {
+      throw SoundsException('Не удалось подготовить файл для загрузки.');
+    }
 
     final streamed = await _client.send(request).timeout(const Duration(minutes: 5));
     final res = await http.Response.fromStream(streamed);

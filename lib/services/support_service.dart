@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/support_ticket.dart';
 
 class SupportException implements Exception {
@@ -12,7 +14,7 @@ class SupportException implements Exception {
 }
 
 class SupportService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Map<String, String> _headers(String token) => {
         'Authorization': 'Bearer $token',

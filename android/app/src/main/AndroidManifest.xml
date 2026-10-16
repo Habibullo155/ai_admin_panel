@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- без этого релизная сборка не выходит в интернет вообще -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="ai_admin_panel"
+        android:label="LOMALU Админ"
+        android:allowBackup="false"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

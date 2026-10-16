@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
+
+import 'pinned_http_client.dart';
 
 import '../models/admin_user.dart';
 
@@ -12,7 +15,7 @@ class AdminUsersException implements Exception {
 }
 
 class AdminUsersService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Map<String, String> _headers(String token) => {
         'Authorization': 'Bearer $token',
@@ -26,7 +29,11 @@ class AdminUsersService {
     if (res.statusCode >= 400) {
       throw AdminUsersException(_extractError(res.body) ?? 'Не удалось загрузить список пользователей.');
     }
-    final list = jsonDecode(res.body) as List<dynamic>;
+    // compute() - разбор JSON синхронно на главном потоке для большого
+    // списка (сотни/тысячи пользователей, без пагинации на бэкенде -
+    // см. GET /api/admin/users) заметно подвешивает интерфейс на время
+    // парсинга; изолят убирает это из UI-потока
+    final list = await compute(jsonDecode, res.body) as List<dynamic>;
     return list.map((e) => AdminUser.fromJson(e as Map<String, dynamic>)).toList();
   }
 

@@ -1,6 +1,7 @@
 class BlogPostSummary {
   final int id;
   final String title;
+  final String excerpt;
   final bool isPublished;
   final DateTime createdAt;
   final DateTime? publishedAt;
@@ -11,6 +12,7 @@ class BlogPostSummary {
   BlogPostSummary({
     required this.id,
     required this.title,
+    required this.excerpt,
     required this.isPublished,
     required this.createdAt,
     required this.publishedAt,
@@ -23,6 +25,7 @@ class BlogPostSummary {
     return BlogPostSummary(
       id: json['id'] as int,
       title: json['title'] as String? ?? '',
+      excerpt: json['excerpt'] as String? ?? '',
       isPublished: json['is_published'] as bool? ?? false,
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
       publishedAt: json['published_at'] != null ? DateTime.tryParse(json['published_at'] as String) : null,

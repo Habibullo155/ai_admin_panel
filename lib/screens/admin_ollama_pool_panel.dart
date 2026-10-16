@@ -321,7 +321,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
                 ),
                 Switch(
                   value: server.enabled,
-                  activeThumbColor: const Color(0xFF6C5CE7),
+                  activeColor: const Color(0xFF6C5CE7),
                   onChanged: (_) => _toggleEnabled(server),
                 ),
               ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'screens/admin_shell_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/lock_screen.dart';
+import 'screens/two_factor_verify_screen.dart';
 import 'state/auth_store.dart';
 import 'state/theme_store.dart';
 
@@ -51,7 +52,7 @@ class _AdminAppState extends State<AdminApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AI Glass Chat — админ',
+      title: 'LOMALU — админ',
       debugShowCheckedModeBanner: false,
       themeMode: switch (_themeStore.mode) {
         AppThemeMode.light => ThemeMode.light,
@@ -60,11 +61,17 @@ class _AdminAppState extends State<AdminApp> {
       },
       theme: ThemeData.light(useMaterial3: true).copyWith(
         scaffoldBackgroundColor: const Color(0xFFF3F0FF),
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6C5CE7), brightness: Brightness.light),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6C5CE7),
+          brightness: Brightness.light,
+        ),
       ),
       darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
         scaffoldBackgroundColor: const Color(0xFF0B0F1E),
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6C5CE7), brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6C5CE7),
+          brightness: Brightness.dark,
+        ),
       ),
       home: _buildHome(),
     );
@@ -77,6 +84,8 @@ class _AdminAppState extends State<AdminApp> {
         return const _LoadingScreen();
       case AuthStatus.unauthenticated:
         return AuthScreen(store: _authStore);
+      case AuthStatus.twoFactorRequired:
+        return TwoFactorVerifyScreen(store: _authStore);
       case AuthStatus.locked:
         return LockScreen(authStore: _authStore);
       case AuthStatus.authenticated:
@@ -86,7 +95,9 @@ class _AdminAppState extends State<AdminApp> {
         // должен видеть даже пустой экран админки, только явный отказ.
         // Сами данные всё равно защищены на бэкенде (get_current_admin),
         // это дополнительный, а не единственный слой
-        if (user == null || !user.isAdmin) return _NotAdminScreen(onLogout: _authStore.logout);
+        if (user == null || !user.isAdmin) {
+          return _NotAdminScreen(onLogout: _authStore.logout);
+        }
         return AdminShellScreen(authStore: _authStore);
     }
   }
@@ -123,7 +134,11 @@ class _NotAdminScreen extends StatelessWidget {
               const Text(
                 'Это приложение только для администраторов',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 6),
               const Text(

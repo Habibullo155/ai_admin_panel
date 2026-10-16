@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
+
+import 'pinned_http_client.dart';
 
 import '../models/help_session.dart';
 import '../models/operator_stats.dart';
@@ -13,7 +16,7 @@ class OperatorsException implements Exception {
 }
 
 class OperatorsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Map<String, String> _headers(String token) => {
         'Authorization': 'Bearer $token',
@@ -37,7 +40,10 @@ class OperatorsService {
     if (res.statusCode >= 400) {
       throw OperatorsException(_extractError(res.body) ?? 'Не удалось загрузить список операторов.');
     }
-    return (jsonDecode(res.body) as List<dynamic>)
+    // compute() - разбор JSON синхронно на главном потоке для большого
+        // списка (без пагинации на бэкенде) заметно подвешивает интерфейс -
+        // изолят убирает это из UI-потока
+        return ((await compute(jsonDecode, res.body)) as List<dynamic>)
         .map((e) => OperatorStats.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -53,7 +59,10 @@ class OperatorsService {
     if (res.statusCode >= 400) {
       throw OperatorsException(_extractError(res.body) ?? 'Не удалось загрузить историю обращений.');
     }
-    return (jsonDecode(res.body) as List<dynamic>)
+    // compute() - разбор JSON синхронно на главном потоке для большого
+        // списка (без пагинации на бэкенде) заметно подвешивает интерфейс -
+        // изолят убирает это из UI-потока
+        return ((await compute(jsonDecode, res.body)) as List<dynamic>)
         .map((e) => HelpSession.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -69,7 +78,10 @@ class OperatorsService {
     if (res.statusCode >= 400) {
       throw OperatorsException(_extractError(res.body) ?? 'Не удалось загрузить выговоры.');
     }
-    return (jsonDecode(res.body) as List<dynamic>)
+    // compute() - разбор JSON синхронно на главном потоке для большого
+        // списка (без пагинации на бэкенде) заметно подвешивает интерфейс -
+        // изолят убирает это из UI-потока
+        return ((await compute(jsonDecode, res.body)) as List<dynamic>)
         .map((e) => OperatorWarning.fromJson(e as Map<String, dynamic>))
         .toList();
   }

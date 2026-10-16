@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/dashboard_stats.dart';
 
 class StatsException implements Exception {
@@ -12,7 +14,7 @@ class StatsException implements Exception {
 }
 
 class StatsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Future<DashboardStats> getDashboardStats({
     required String baseUrl,

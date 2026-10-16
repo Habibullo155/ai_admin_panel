@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/system_status.dart';
 
 class AdminSystemException implements Exception {
@@ -13,7 +15,7 @@ class AdminSystemException implements Exception {
 }
 
 class AdminSystemService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   void dispose() => _client.close();
 

@@ -9,8 +9,13 @@ import '../services/auth_service.dart' as auth_svc;
 
 // locked - токен уже прочитан (сессия есть), но биометрия ещё не
 // подтверждена в этом запуске. Не то же, что unauthenticated - там
-// сессии нет вообще
-enum AuthStatus { unknown, checking, authenticated, unauthenticated, locked }
+// сессии нет вообще.
+// twoFactorRequired - email+пароль приняты сервером, но у аккаунта
+// включена 2FA - ждём код из аутентификатора (pendingTwoFactorToken)
+// прежде чем реально выдать сессию. Особенно важно для admin -
+// украденный admin-токен опаснее (доступ к SQL-консоли и всем
+// пользователям), см. two_factor.py.
+enum AuthStatus { unknown, checking, authenticated, unauthenticated, locked, twoFactorRequired }
 
 class AuthStore extends ChangeNotifier {
   final auth_svc.AuthService _authService = auth_svc.AuthService();
@@ -22,6 +27,7 @@ class AuthStore extends ChangeNotifier {
   String? lastError;
   bool isBusy = false;
   String? _pendingToken; // токен, ожидающий подтверждения биометрией
+  String? _pendingTwoFactorToken; // ожидает подтверждения TOTP/резервным кодом (см. AuthStatus.twoFactorRequired)
 
   // только из --dart-define=BACKEND_URL=..., не редактируется в приложении -
   // рядовой юзер не должен мочь перенаправить приложение на чужой сервер
@@ -109,8 +115,132 @@ class AuthStore extends ChangeNotifier {
   Future<bool> register(String email, String password) =>
       _attempt(() => _authService.register(baseUrl: baseUrl, email: email, password: password));
 
-  Future<bool> login(String email, String password) =>
-      _attempt(() => _authService.login(baseUrl: baseUrl, email: email, password: password));
+  // Возвращает true и переводит в authenticated только если 2FA не
+  // потребовалась - иначе переходит в twoFactorRequired и возвращает
+  // false (не ошибка - не через _attempt, тот выставляет
+  // token/user/status только при полном успехе)
+  Future<bool> login(String email, String password) async {
+    isBusy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      final outcome = await _authService.login(baseUrl: baseUrl, email: email, password: password);
+      if (outcome.requiresTwoFactor) {
+        _pendingTwoFactorToken = outcome.pendingToken;
+        status = AuthStatus.twoFactorRequired;
+        return false;
+      }
+      final result = outcome.result!;
+      token = result.token;
+      user = result.user;
+      status = AuthStatus.authenticated;
+      return true;
+    } on auth_svc.AuthException catch (e) {
+      lastError = e.message;
+      return false;
+    } catch (e) {
+      lastError = 'Непредвиденная ошибка: $e';
+      return false;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  // Второй шаг входа при twoFactorRequired - код из аутентификатора
+  // (6 цифр) или резервный код. null при успехе, иначе текст ошибки.
+  Future<String?> submitTwoFactorCode(String code) async {
+    final pending = _pendingTwoFactorToken;
+    if (pending == null) return 'Сессия не найдена. Войди заново.';
+
+    isBusy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      final result = await _authService.verifyLoginTwoFactor(baseUrl: baseUrl, pendingToken: pending, code: code);
+      token = result.token;
+      user = result.user;
+      status = AuthStatus.authenticated;
+      _pendingTwoFactorToken = null;
+      return null;
+    } on auth_svc.AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'Непредвиденная ошибка: $e';
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  // Отмена ввода 2FA-кода - возвращает на обычный экран входа
+  void cancelTwoFactorLogin() {
+    _pendingTwoFactorToken = null;
+    status = AuthStatus.unauthenticated;
+    notifyListeners();
+  }
+
+  // --- Управление 2FA для уже вошедшего пользователя (настройки) ---
+
+  Future<auth_svc.TwoFactorSetup?> startTwoFactorSetup() async {
+    final currentToken = token;
+    if (currentToken == null) return null;
+    try {
+      return await _authService.setupTwoFactor(baseUrl: baseUrl, token: currentToken);
+    } on auth_svc.AuthException catch (e) {
+      lastError = e.message;
+      notifyListeners();
+      return null;
+    } catch (e) {
+      lastError = 'Непредвиденная ошибка: $e';
+      notifyListeners();
+      return null;
+    }
+  }
+
+  // Список из 10 резервных кодов при успехе (показать РОВНО ОДИН РАЗ),
+  // null при ошибке (текст - в lastError)
+  Future<List<String>?> confirmTwoFactorSetup(String code) async {
+    final currentToken = token;
+    if (currentToken == null) return null;
+    isBusy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      final codes = await _authService.confirmTwoFactor(baseUrl: baseUrl, token: currentToken, code: code);
+      if (user != null) user = user!.copyWithTotpEnabled(true);
+      return codes;
+    } on auth_svc.AuthException catch (e) {
+      lastError = e.message;
+      return null;
+    } catch (e) {
+      lastError = 'Непредвиденная ошибка: $e';
+      return null;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  // null при успехе, иначе текст ошибки
+  Future<String?> disableTwoFactor({required String password, required String code}) async {
+    final currentToken = token;
+    if (currentToken == null) return 'Сессия не найдена. Войди заново.';
+    isBusy = true;
+    notifyListeners();
+    try {
+      await _authService.disableTwoFactor(baseUrl: baseUrl, token: currentToken, password: password, code: code);
+      if (user != null) user = user!.copyWithTotpEnabled(false);
+      return null;
+    } on auth_svc.AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'Непредвиденная ошибка: $e';
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
 
   // не через _attempt() - тот выставляет token/user/status при успехе,
   // здесь ничего из этого не происходит (только письмо уходит либо

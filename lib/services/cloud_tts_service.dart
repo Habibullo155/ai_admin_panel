@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 class CloudTtsException implements Exception {
   final String message;
   CloudTtsException(this.message);
@@ -11,7 +13,7 @@ class CloudTtsException implements Exception {
 }
 
 class CloudTtsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   /// Возвращает сырые байты MP3 — декодированные из base64, который
   /// присылает наш бэкенд (backend/routers_tts.py). Ключ Silero (если

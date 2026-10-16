@@ -27,10 +27,13 @@ jobs:
 
       - run: flutter pub get
 
+      # адрес API не секрет (его видно в браузере) - задан прямо здесь
       - name: Build web (with backend URL baked in)
+        env:
+          BACKEND_URL: https://api.lomalu.ru
         run: |
-          flutter build web --release \
-            --dart-define=BACKEND_URL=${{ secrets.BACKEND_URL }} \
+          flutter build web --release --no-web-resources-cdn \
+            --dart-define=BACKEND_URL=$BACKEND_URL \
             --base-href /${{ github.event.repository.name }}/
 
       - uses: actions/upload-pages-artifact@v3

@@ -30,7 +30,7 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
   bool _isSaving = false;
   bool _isPreviewPlaying = false;
   bool _cloudTtsAvailable = false;
-  String _defaultVoice = 'baya';
+  String _defaultVoice = '21m00Tcm4TlvDq8ikWAM';
   String? _error;
 
   @override

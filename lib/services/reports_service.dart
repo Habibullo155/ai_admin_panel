@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
+
+import 'pinned_http_client.dart';
 
 import '../models/response_report.dart';
 
@@ -12,7 +15,7 @@ class ReportsException implements Exception {
 }
 
 class ReportsService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   Map<String, String> _headers(String token) => {
         'Authorization': 'Bearer $token',
@@ -50,7 +53,10 @@ class ReportsService {
     if (res.statusCode >= 400) {
       throw ReportsException(_extractError(res.body) ?? 'Не удалось загрузить жалобы.');
     }
-    final list = jsonDecode(res.body) as List<dynamic>;
+    // compute() - разбор JSON синхронно на главном потоке для большого
+    // списка (без пагинации на бэкенде) заметно подвешивает интерфейс -
+    // изолят убирает это из UI-потока
+    final list = await compute(jsonDecode, res.body) as List<dynamic>;
     return list.map((e) => ResponseReport.fromJson(e as Map<String, dynamic>)).toList();
   }
 
@@ -61,7 +67,10 @@ class ReportsService {
     if (res.statusCode >= 400) {
       throw ReportsException(_extractError(res.body) ?? 'Не удалось загрузить жалобы.');
     }
-    final list = jsonDecode(res.body) as List<dynamic>;
+    // compute() - разбор JSON синхронно на главном потоке для большого
+    // списка (без пагинации на бэкенде) заметно подвешивает интерфейс -
+    // изолят убирает это из UI-потока
+    final list = await compute(jsonDecode, res.body) as List<dynamic>;
     return list.map((e) => ResponseReport.fromJson(e as Map<String, dynamic>)).toList();
   }
 

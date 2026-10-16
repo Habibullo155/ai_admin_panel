@@ -12,6 +12,7 @@ class AppUser {
   final String? emergencyContact;
   final String? avatarBase64;
   final bool isOperator;
+  final bool totpEnabled;
 
   AppUser({
     required this.id,
@@ -27,7 +28,28 @@ class AppUser {
     this.emergencyContact,
     this.avatarBase64,
     this.isOperator = false,
+    this.totpEnabled = false,
   });
+
+  // Используется сразу после успешного confirmTwoFactor/disableTwoFactor -
+  // без похода за свежим /me, чтобы UI (переключатель в настройках)
+  // обновился мгновенно, а не после следующего запроса.
+  AppUser copyWithTotpEnabled(bool enabled) => AppUser(
+        id: id,
+        email: email,
+        role: role,
+        tariff: tariff,
+        isActive: isActive,
+        isEmailVerified: isEmailVerified,
+        createdAt: createdAt,
+        fullName: fullName,
+        birthDate: birthDate,
+        hobbies: hobbies,
+        emergencyContact: emergencyContact,
+        avatarBase64: avatarBase64,
+        isOperator: isOperator,
+        totpEnabled: enabled,
+      );
 
   bool get isAdmin => role == 'admin';
 
@@ -60,6 +82,7 @@ class AppUser {
       emergencyContact: json['emergency_contact'] as String?,
       avatarBase64: json['avatar_base64'] as String?,
       isOperator: json['is_operator'] as bool? ?? false,
+      totpEnabled: json['totp_enabled'] as bool? ?? false,
     );
   }
 }

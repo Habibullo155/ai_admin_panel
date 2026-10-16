@@ -30,6 +30,8 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
   // уже без пошагового прогресса, см. _buildUploadButton).
   double? _uploadProgress;
   String? _error;
+  String? _notice;
+  bool _isReindexing = false;
 
   // Сохраняем последний выбранный файл — если загрузка большой книги
   // сорвалась (сеть, таймаут), можно попробовать снова СРАЗУ, не
@@ -77,7 +79,8 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
     // readAsBytes() бросает исключение, а не возвращает null
     final file = await FilePicker.pickFile(
       type: FileType.custom,
-      allowedExtensions: ['pdf'],
+      // формат сервер определяет по содержимому (book_extract.py)
+      allowedExtensions: ['pdf', 'epub', 'fb2', 'zip', 'docx', 'txt'],
     );
     if (file == null) return;
     final Uint8List bytes;
@@ -141,6 +144,26 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
     }
   }
 
+  // после смены модели эмбеддингов или для книг, загруженных до
+  // поддержки префиксов nomic - иначе поиск по ним работает хуже
+  Future<void> _reindex() async {
+    final token = widget.authStore.token;
+    if (token == null) return;
+    setState(() {
+      _isReindexing = true;
+      _error = null;
+      _notice = null;
+    });
+    try {
+      final chunks = await _service.reindex(baseUrl: widget.authStore.baseUrl, token: token);
+      if (mounted) setState(() => _notice = 'Готово: пересчитано фрагментов — $chunks');
+    } on DocumentsException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _isReindexing = false);
+    }
+  }
+
   Future<void> _delete(RagDocument doc) async {
     final token = widget.authStore.token;
     if (token == null) return;
@@ -197,6 +220,19 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
                           _buildIntro(),
                           const SizedBox(height: 16),
                           _buildUploadButton(),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                              onPressed: _isUploading || _isReindexing ? null : _reindex,
+                              icon: _isReindexing
+                                  ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : const Icon(Icons.refresh_rounded, size: 18),
+                              label: const Text('Переиндексировать все книги'),
+                            ),
+                          ),
+                          if (_notice != null)
+                            Text(_notice!, style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5)),
                           if (_error != null) ...[
                             const SizedBox(height: 12),
                             Text(_error!, style: const TextStyle(color: Color(0xFFFFB4B4), fontSize: 13)),
@@ -248,10 +284,11 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
       borderRadius: BorderRadius.circular(20),
       padding: const EdgeInsets.all(16),
       child: Text(
-        'Загрузи PDF — сервер сам разобьёт его на смысловые разделы и '
-        'посчитает эмбеддинги. При ответах модель будет автоматически '
-        'подмешивать релевантные куски из загруженных документов, если '
-        'вопрос пользователя с ними связан.',
+        'Загрузи книгу или статью по психологии (PDF, EPUB, FB2, DOCX, TXT) — '
+        'сервер разобьёт её на смысловые фрагменты и посчитает эмбеддинги '
+        '(nomic-embed-text). ИИ-психолог — и быстрая модель, и Pro — будет '
+        'опираться на подходящие фрагменты, когда разговор касается их темы. '
+        'Сканы без текстового слоя не подойдут (нужен OCR).',
         style: TextStyle(color: context.onSurfaceFaded(0.65), fontSize: 13, height: 1.5),
       ),
     );
@@ -311,7 +348,7 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
                             // Байты уже все ушли — здесь уже нельзя
                             // показать процент, сервер разбирает PDF и
                             // считает эмбеддинги без пошагового статуса.
-                            Text('Обрабатываю PDF, считаю эмбеддинги…', style: TextStyle(color: Colors.white)),
+                            Text('Обрабатываю книгу, считаю эмбеддинги…', style: TextStyle(color: Colors.white)),
                           ],
                         )
                       : const Row(
@@ -319,7 +356,7 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
                           children: [
                             Icon(Icons.upload_file_rounded, color: Colors.white, size: 20),
                             SizedBox(width: 10),
-                            Text('Загрузить PDF', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                            Text('Загрузить книгу', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                           ],
                         ),
             ),
@@ -363,7 +400,7 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            Icon(Icons.picture_as_pdf_rounded, color: context.onSurfaceFaded(0.6)),
+            Icon(Icons.menu_book_rounded, color: context.onSurfaceFaded(0.6)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

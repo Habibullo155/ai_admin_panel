@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart' show compute;
+
+import 'encrypted_storage.dart';
 
 import '../models/wellbeing_checkin.dart';
 
@@ -14,10 +16,12 @@ class WellbeingService {
 
   Future<List<WellbeingCheckin>> loadCheckins(String userId) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_keyFor(userId));
+      final raw = await EncryptedStorage.getString(_keyFor(userId));
       if (raw == null || raw.isEmpty) return [];
-      final list = jsonDecode(raw) as List<dynamic>;
+      // compute() - jsonDecode синхронно на главном потоке при годах
+      // накопленных чек-инов/результатов заметно подвешивает интерфейс -
+      // изолят убирает это из UI-потока
+      final list = await compute(jsonDecode, raw) as List<dynamic>;
       return list
           .map((e) => WellbeingCheckin.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -30,9 +34,8 @@ class WellbeingService {
 
   Future<bool> saveCheckins(String userId, List<WellbeingCheckin> checkins) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
       final raw = jsonEncode(checkins.map((c) => c.toJson()).toList());
-      await prefs.setString(_keyFor(userId), raw);
+      await EncryptedStorage.setString(_keyFor(userId), raw);
       return true;
     } catch (_) {
       return false;

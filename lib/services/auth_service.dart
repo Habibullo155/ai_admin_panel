@@ -4,12 +4,37 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 import '../models/app_user.dart';
 
 class AuthResult {
   final String token;
   final AppUser user;
   AuthResult({required this.token, required this.user});
+}
+
+/// Результат /api/auth/login - либо сразу токен (2FA выключена), либо
+/// requiresTwoFactor=true с pendingToken для verifyLoginTwoFactor() -
+/// см. two_factor.py на бэкенде. Особенно актуально для admin -
+/// украденный admin-токен опаснее обычного (доступ к SQL-консоли и
+/// всем пользователям), см. комментарий в two_factor.py.
+class LoginOutcome {
+  final bool requiresTwoFactor;
+  final AuthResult? result;
+  final String? pendingToken;
+  LoginOutcome.success(AuthResult this.result)
+      : requiresTwoFactor = false,
+        pendingToken = null;
+  LoginOutcome.needsTwoFactor(String this.pendingToken)
+      : requiresTwoFactor = true,
+        result = null;
+}
+
+class TwoFactorSetup {
+  final String secret;
+  final String otpauthUri;
+  TwoFactorSetup({required this.secret, required this.otpauthUri});
 }
 
 /// Бросается при ожидаемых ошибках сервера (неверный пароль, email занят,
@@ -22,7 +47,7 @@ class AuthException implements Exception {
 }
 
 class AuthService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
   final _storage = const FlutterSecureStorage();
   static const _tokenKey = 'auth_token';
 
@@ -38,11 +63,165 @@ class AuthService {
     required String password,
   }) => _authRequest('$baseUrl/api/auth/register', email, password);
 
-  Future<AuthResult> login({
+  Future<LoginOutcome> login({
     required String baseUrl,
     required String email,
     required String password,
-  }) => _authRequest('$baseUrl/api/auth/login', email, password);
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'email': email, 'password': password}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    final Map<String, dynamic> data;
+    try {
+      data = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+    }
+
+    if (res.statusCode >= 400) {
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    if (data['requires_2fa'] == true) {
+      return LoginOutcome.needsTwoFactor(data['pending_token'] as String);
+    }
+
+    final token = data['access_token'] as String;
+    final user = AppUser.fromJson(data['user'] as Map<String, dynamic>);
+    await _storeToken(token);
+    return LoginOutcome.success(AuthResult(token: token, user: user));
+  }
+
+  Future<AuthResult> verifyLoginTwoFactor({
+    required String baseUrl,
+    required String pendingToken,
+    required String code,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/2fa/verify-login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'pending_token': pendingToken, 'code': code}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    final Map<String, dynamic> data;
+    try {
+      data = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+    }
+
+    if (res.statusCode >= 400) {
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    final token = data['access_token'] as String;
+    final user = AppUser.fromJson(data['user'] as Map<String, dynamic>);
+    await _storeToken(token);
+    return AuthResult(token: token, user: user);
+  }
+
+  Future<TwoFactorSetup> setupTwoFactor({required String baseUrl, required String token}) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(Uri.parse('$baseUrl/api/auth/2fa/setup'), headers: {'Authorization': 'Bearer $token'})
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    final Map<String, dynamic> data;
+    try {
+      data = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+    }
+
+    if (res.statusCode >= 400) {
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    return TwoFactorSetup(secret: data['secret'] as String, otpauthUri: data['otpauth_uri'] as String);
+  }
+
+  Future<List<String>> confirmTwoFactor({
+    required String baseUrl,
+    required String token,
+    required String code,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/2fa/confirm'),
+            headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
+            body: jsonEncode({'code': code}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    final Map<String, dynamic> data;
+    try {
+      data = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthException('Сервер вернул неожиданный ответ (код ${res.statusCode}).');
+    }
+
+    if (res.statusCode >= 400) {
+      throw AuthException(_extractErrorMessage(data));
+    }
+
+    return (data['backup_codes'] as List).map((e) => e.toString()).toList();
+  }
+
+  Future<void> disableTwoFactor({
+    required String baseUrl,
+    required String token,
+    required String password,
+    required String code,
+  }) async {
+    http.Response res;
+    try {
+      res = await _client
+          .post(
+            Uri.parse('$baseUrl/api/auth/2fa/disable'),
+            headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
+            body: jsonEncode({'password': password, 'code': code}),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw AuthException('Не удалось связаться с сервером.\n$e');
+    }
+
+    if (res.statusCode >= 400) {
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(res.body) as Map<String, dynamic>;
+      } catch (_) {
+        throw AuthException('Не удалось отключить 2FA (код ${res.statusCode}).');
+      }
+      throw AuthException(_extractErrorMessage(data));
+    }
+  }
 
   Future<AuthResult> _authRequest(String url, String email, String password) async {
     http.Response res;

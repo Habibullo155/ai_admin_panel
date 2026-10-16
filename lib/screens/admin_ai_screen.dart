@@ -34,6 +34,9 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
   double _topP = 0.95;
   ResponseLength _responseLength = ResponseLength.balanced;
   bool _themeControlEnabled = true;
+  bool _proModelEnabled = true;
+  bool _crisisClassifierEnabled = true;
+  ModelSettings? _loadedModel;
   bool _isSavingModel = false;
   bool _isResettingModel = false;
   String? _modelError;
@@ -68,12 +71,103 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
         _topP = model.topP;
         _responseLength = model.responseLength;
         _themeControlEnabled = model.themeControlEnabled;
+        _proModelEnabled = model.proModelEnabled;
+        _crisisClassifierEnabled = model.crisisClassifierEnabled;
+        _loadedModel = model;
       });
     } on AppSettingsException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  /// Две модели на vLLM: base (OLLAMA_MODEL) и pro (OLLAMA_PRO_MODEL).
+  /// Имена показываем как есть из .env сервера - сразу видно, что куда
+  /// уходит. Выключатель pro - например, пока pro-сервер на обслуживании.
+  Widget _buildModelsBlock() {
+    final model = _loadedModel;
+    Widget line(IconData icon, String title, String value, Color color) => Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              Icon(icon, size: 16, color: color),
+              const SizedBox(width: 8),
+              Text(title, style: TextStyle(color: context.onSurfaceFaded(0.6), fontSize: 12.5)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  value,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: context.onSurface, fontSize: 12.5, fontFamily: 'monospace'),
+                ),
+              ),
+            ],
+          ),
+        );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Модели', style: TextStyle(color: context.onSurface, fontSize: 13, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 10),
+        line(Icons.bolt_rounded, 'Быстрая (base):', model?.baseModelName ?? '…', const Color(0xFFFFD166)),
+        line(
+          Icons.auto_awesome_rounded,
+          'Pro:',
+          model == null
+              ? '…'
+              : (model.proModelConfigured ? model.proModelName : 'не настроена (OLLAMA_PRO_MODEL в .env)'),
+          const Color(0xFF8C7CFF),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Pro-модель включена', style: TextStyle(color: context.onSurface, fontSize: 13)),
+                  Text(
+                    'Выключи - все пользователи будут получать ответы быстрой моделью. '
+                    'Квоты pro по тарифам задаются в разделе «Тарифы».',
+                    style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: _proModelEnabled,
+              onChanged: (model?.proModelConfigured ?? false)
+                  ? (v) => setState(() => _proModelEnabled = v)
+                  : null,
+              activeThumbColor: const Color(0xFF6C5CE7),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Проверка кризиса моделью', style: TextStyle(color: context.onSurface, fontSize: 13)),
+                  Text(
+                    'Перед ответом быстрая модель оценивает риск суицида: ловит перефразированные '
+                    'сигналы, которых нет в списке ключевых фраз. Добавляет долю секунды к ответу.',
+                    style: TextStyle(color: context.onSurfaceFaded(0.4), fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: _crisisClassifierEnabled,
+              onChanged: (v) => setState(() => _crisisClassifierEnabled = v),
+              activeThumbColor: const Color(0xFF6C5CE7),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Future<void> _saveModel() async {
@@ -92,6 +186,8 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
         topP: _topP,
         responseLength: _responseLength,
         themeControlEnabled: _themeControlEnabled,
+        proModelEnabled: _proModelEnabled,
+        crisisClassifierEnabled: _crisisClassifierEnabled,
       );
       if (mounted) setState(() => _modelSavedNotice = 'Сохранено');
     } on AppSettingsException catch (e) {
@@ -117,6 +213,8 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
           _topP = reset.topP;
           _responseLength = reset.responseLength;
           _themeControlEnabled = reset.themeControlEnabled;
+          _proModelEnabled = reset.proModelEnabled;
+          _crisisClassifierEnabled = reset.crisisClassifierEnabled;
         });
       }
     } on AppSettingsException catch (e) {
@@ -491,6 +589,8 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
               const SizedBox(height: 12),
               Text('Длина ответа', style: TextStyle(color: context.onSurface, fontSize: 13, fontWeight: FontWeight.w500)),
               const SizedBox(height: 10),
+              _buildModelsBlock(),
+              const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
                 children: [
@@ -519,7 +619,7 @@ class _AdminAiScreenState extends State<AdminAiScreen> {
                   Switch(
                     value: _themeControlEnabled,
                     onChanged: (v) => setState(() => _themeControlEnabled = v),
-                    activeThumbColor: const Color(0xFF6C5CE7),
+                    activeColor: const Color(0xFF6C5CE7),
                   ),
                 ],
               ),

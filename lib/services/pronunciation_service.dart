@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'pinned_http_client.dart';
+
 class PronunciationException implements Exception {
   final String message;
   PronunciationException(this.message);
@@ -10,7 +12,7 @@ class PronunciationException implements Exception {
 }
 
 class PronunciationService {
-  final http.Client _client = http.Client();
+  final http.Client _client = createHttpClient();
 
   /// Если сервер недоступен — возвращаем пустой словарь, не блокируем
   /// озвучку целиком из-за временной проблемы с сетью.
