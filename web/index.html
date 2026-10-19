@@ -19,6 +19,13 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Панель администратора LOMALU">
+  <!-- админку не индексируют поисковики -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <!-- CSP: только свои скрипты и только наш API - чужой скрипт (XSS) не
+       запустится и не отправит токен админа на чужой сервер. GitHub Pages
+       не даёт задать заголовки, поэтому через meta -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.lomalu.ru https://195.170.195.118.nip.io https://fonts.gstatic.com; media-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
