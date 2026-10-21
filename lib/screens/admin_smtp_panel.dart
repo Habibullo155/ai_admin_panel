@@ -7,9 +7,6 @@ import '../theme/app_text_color.dart';
 import '../widgets/glass_panel.dart';
 
 /// Настройка отправки почты (коды подтверждения, восстановление пароля).
-/// БД имеет приоритет над .env - если задано здесь, используется это,
-/// иначе бэкенд падает обратно на переменные окружения. Пароль никогда
-/// не приходит обратно с сервера - только признак, задан он или нет.
 class AdminSmtpPanel extends StatefulWidget {
   final AuthStore authStore;
   const AdminSmtpPanel({super.key, required this.authStore});

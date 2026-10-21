@@ -7,14 +7,8 @@ import '../models/app_user.dart';
 import '../services/biometric_service.dart';
 import '../services/auth_service.dart' as auth_svc;
 
-// locked - токен уже прочитан (сессия есть), но биометрия ещё не
-// подтверждена в этом запуске. Не то же, что unauthenticated - там
-// сессии нет вообще.
-// twoFactorRequired - email+пароль приняты сервером, но у аккаунта
-// включена 2FA - ждём код из аутентификатора (pendingTwoFactorToken)
-// прежде чем реально выдать сессию. Особенно важно для admin -
-// украденный admin-токен опаснее (доступ к SQL-консоли и всем
-// пользователям), см. two_factor.py.
+// locked - токен уже прочитан (сессия есть), но биометрия ещё не подтверждена в
+// этом запуске.
 enum AuthStatus { unknown, checking, authenticated, unauthenticated, locked, twoFactorRequired }
 
 class AuthStore extends ChangeNotifier {
@@ -116,9 +110,7 @@ class AuthStore extends ChangeNotifier {
       _attempt(() => _authService.register(baseUrl: baseUrl, email: email, password: password));
 
   // Возвращает true и переводит в authenticated только если 2FA не
-  // потребовалась - иначе переходит в twoFactorRequired и возвращает
-  // false (не ошибка - не через _attempt, тот выставляет
-  // token/user/status только при полном успехе)
+  // потребовалась
   Future<bool> login(String email, String password) async {
     isBusy = true;
     lastError = null;

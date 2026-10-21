@@ -29,10 +29,8 @@ class AdminUsersService {
     if (res.statusCode >= 400) {
       throw AdminUsersException(_extractError(res.body) ?? 'Не удалось загрузить список пользователей.');
     }
-    // compute() - разбор JSON синхронно на главном потоке для большого
-    // списка (сотни/тысячи пользователей, без пагинации на бэкенде -
-    // см. GET /api/admin/users) заметно подвешивает интерфейс на время
-    // парсинга; изолят убирает это из UI-потока
+    // compute() - разбор JSON синхронно на главном потоке для большого списка
+    // (сотни/тысячи пользователей, без пагинации на бэкенде - см.
     final list = await compute(jsonDecode, res.body) as List<dynamic>;
     return list.map((e) => AdminUser.fromJson(e as Map<String, dynamic>)).toList();
   }

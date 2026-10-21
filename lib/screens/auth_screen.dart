@@ -46,10 +46,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (ok && mounted) {
       // Завершает автозаполнение и явно сигналит ОС/браузеру, что можно
-      // предложить "Сохранить пароль?" — без этого вызова на некоторых
-      // платформах (особенно вебе и части Android-путей) подсказка о
-      // сохранении может не появиться, даже если поля размечены
-      // autofillHints правильно.
+      // предложить "Сохранить пароль?"
       TextInput.finishAutofillContext();
       _passwordController.clear();
       _confirmPasswordController.clear();
@@ -255,10 +252,8 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  /// Живая подсказка про минимальную длину пароля (8 символов — то же
-  /// правило, что и на сервере, schemas.py:UserRegister). Без этого
-  /// единственная обратная связь была — ошибка сервера уже ПОСЛЕ отправки
-  /// формы, что неудобно и непонятно на этапе ввода.
+  /// Живая подсказка про минимальную длину пароля (8 символов — то же правило,
+  /// что и на сервере, schemas.py:UserRegister).
   Widget _buildPasswordHint() {
     final length = _passwordController.text.length;
     const minLength = 8;

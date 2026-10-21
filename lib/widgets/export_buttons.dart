@@ -39,10 +39,7 @@ class ExportButtonsRow extends StatelessWidget {
 
   Future<Uint8List> _buildPdfBytes() async {
     final doc = pw.Document();
-    // делим на страницы по 30 строк - pw.Table.fromTextArray сам не
-    // переносит содержимое на новую страницу PDF, если строк слишком много.
-    // do-while - минимум одна страница даже для пустой таблицы (просто с
-    // заголовком, без строк), дальше продолжаем, пока есть данные
+    // делим на страницы по 30 строк
     const rowsPerPage = 30;
     var start = 0;
     do {

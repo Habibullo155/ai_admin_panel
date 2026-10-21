@@ -6,23 +6,7 @@ import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Шифрует данные перед сохранением в SharedPreferences - раньше история
-/// чатов, дневники благодарности, результаты тестов (PHQ-9/GAD-7/ASRS)
-/// и заметки о самочувствии хранились там ЧИСТЫМ ТЕКСТОМ (обычный
-/// XML/plist-файл на диске устройства) - извлекаются любым бэкап-софтом
-/// или вредоносным приложением с доступом к файловой системе, без root/
-/// джейлбрейка даже. Для приложения, где хранятся личные переживания и
-/// результаты психологических тестов, это неприемлемо.
-///
-/// AES-256-GCM (аутентифицированное шифрование - защищает не только от
-/// чтения, но и от незаметной подмены зашифрованных данных на диске).
-/// Ключ шифрования - 256 случайных бит, сгенерированных один раз при
-/// первом использовании и хранящихся в flutter_secure_storage (Keychain
-/// на iOS, Keystore на Android - аппаратно защищённое хранилище,
-/// отдельное от обычной файловой системы приложения). Сами
-/// зашифрованные данные остаются в SharedPreferences как раньше - Keychain/
-/// Keystore не годятся для больших объёмов (история чатов может быть
-/// большой, включая base64-фото), только для самого ключа.
+/// Шифрует данные перед сохранением в SharedPreferences
 class EncryptedStorage {
   static const _secureStorage = FlutterSecureStorage();
   static const _keyStorageKey = 'encrypted_storage_aes_key_v1';
@@ -45,10 +29,8 @@ class EncryptedStorage {
     return key;
   }
 
-  /// Шифрует plaintext, возвращает base64(iv (12 байт для GCM) + ciphertext+tag) -
-  /// IV генерируется заново на КАЖДЫЙ вызов (никогда не переиспользуется
-  /// с тем же ключом - это сломало бы гарантии GCM) и хранится вместе с
-  /// результатом, расшифровка достаёт его обратно.
+  /// Шифрует plaintext, возвращает base64(iv (12 байт для GCM) +
+  /// ciphertext+tag)
   static Future<String> encryptString(String plaintext) async {
     final key = await _getOrCreateKey();
     final iv = enc.IV.fromSecureRandom(12); // 12 байт - стандартный размер nonce для GCM
@@ -59,9 +41,8 @@ class EncryptedStorage {
   }
 
   /// Обратная операция - бросает FormatException/ArgumentError на
-  /// повреждённых/неожиданных данных, вызывающий код должен сам решить,
-  /// что делать (см. storage_service.dart - там это трактуется как
-  /// "начать с чистой историей", не падение приложения).
+  /// повреждённых/неожиданных данных, вызывающий код должен сам решить, что
+  /// делать.
   static Future<String> decryptString(String encoded) async {
     final key = await _getOrCreateKey();
     final combined = base64Decode(encoded);

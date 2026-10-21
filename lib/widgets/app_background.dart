@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../state/theme_store.dart';
 
-// Статичный фон-градиент под тему - раньше здесь была та же анимация с
-// плавающими бликами, что и в основном пользовательском приложении
-// (glassmorphism), но в админке она была лишней нагрузкой без какой-либо
-// пользы для самого администратора - убрана полностью по просьбе.
-// StatelessWidget, не StatefulWidget - без анимации никакого
-// изменяемого состояния (Timer, ValueNotifier) больше не нужно вообще.
+// Статичный фон-градиент под тему
 class AppBackground extends StatelessWidget {
   final Widget child;
   const AppBackground({super.key, required this.child});
@@ -58,11 +53,7 @@ class AppBackground extends StatelessWidget {
     return AnimatedBuilder(
       animation: ThemeStore.instance,
       builder: (context, _) {
-        // Theme.of(context).brightness, не ThemeStore.instance.mode
-        // напрямую - при системном режиме (AppThemeMode.system) сырой
-        // mode не равен ни light, ни dark, а разрешённая MaterialApp'ом
-        // фактическая яркость всегда корректна независимо от того, как
-        // она была выбрана (вручную или через системную тему устройства)
+        // Theme.of(context).brightness, не ThemeStore.instance.mode напрямую
         final isLight = Theme.of(context).brightness == Brightness.light;
         final palette = _paletteFor(ThemeStore.instance.variant, isLight);
         return Stack(

@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/dashboard_stats.dart';
 import '../theme/app_text_color.dart';
 
-/// Простой линейный график без сторонней библиотеки — тот же подход
-/// (CustomPainter), что уже используется для анимаций в упражнениях
-/// (memory_release_screen.dart и др.), не тянем новую зависимость ради
-/// одного графика в админке.
+/// Простой линейный график без сторонней библиотеки
 class ActivityLineChart extends StatelessWidget {
   final List<ActivityDay> data;
   const ActivityLineChart({super.key, required this.data});

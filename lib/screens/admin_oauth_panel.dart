@@ -7,11 +7,6 @@ import '../theme/app_text_color.dart';
 import '../widgets/glass_panel.dart';
 
 /// Настройка входа через внешних провайдеров (Google, VK, Госуслуги, MAX).
-/// После регистрации приложения у самого провайдера сюда вписываются
-/// полученные client_id/client_secret. Честно про Google/VK/Госуслуги/MAX:
-/// не все умеют реально пройти вход целиком прямо сейчас - см.
-/// is_flow_implemented ниже, карточка неготового провайдера показывает
-/// предупреждение, а не притворяется рабочей.
 class AdminOAuthPanel extends StatefulWidget {
   final AuthStore authStore;
   const AdminOAuthPanel({super.key, required this.authStore});

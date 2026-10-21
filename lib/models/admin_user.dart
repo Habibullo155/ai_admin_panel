@@ -35,10 +35,7 @@ class AdminUser {
     return tariffExpiresAt!.difference(DateTime.now()).inDays;
   }
 
-  /// Сравнивает даты напрямую, а не через daysUntilExpiry — Duration.inDays
-  /// округляет К НУЛЮ, а не вниз: если подписка истекла 30 минут назад,
-  /// inDays даст 0 (не -1), и проверка через "daysUntilExpiry! < 0" почти
-  /// сутки ошибочно считала бы подписку ещё активной.
+  /// Сравнивает даты напрямую, а не через daysUntilExpiry
   bool get isTariffExpired =>
       tariffExpiresAt != null && tariffExpiresAt!.isBefore(DateTime.now());
 

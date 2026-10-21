@@ -6,10 +6,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'app.dart';
 
 Future<void> main() async {
-  // Без этого необработанное исключение в асинхронном коде (Future,
-  // например ошибка внутри callback'а, который никто не await'ит) просто
-  // тихо теряется — runZonedGuarded гарантирует, что она хотя бы попадёт
-  // в лог, а не исчезнет незаметно.
+  // Без этого необработанное исключение в асинхронном коде (Future, например
+  // ошибка внутри callback'а, который никто не await'ит) просто тихо теряется
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();

@@ -101,10 +101,7 @@ class _AdminVoiceScreenState extends State<AdminVoiceScreen> {
   }
 
   /// Сохраняет текущие значения ползунков (или их отсутствие) и сразу
-  /// проигрывает тестовую фразу — честно называется "Сохранить и
-  /// прослушать", а не "Прослушать": stability/similarity_boost —
-  /// глобальная настройка сервера, а не параметр одного запроса, так что
-  /// настоящего предпрослушивания без сохранения тут физически нет.
+  /// проигрывает тестовую фразу
   Future<void> _saveAndPreviewVoiceSettings() async {
     final token = widget.authStore.token;
     if (token == null) return;

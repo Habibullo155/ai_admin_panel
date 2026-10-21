@@ -51,13 +51,7 @@ class SoundsService {
     return (jsonDecode(res.body) as List<dynamic>).map((e) => SoundAsset.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  /// bytes ИЛИ filePath - ровно один должен быть передан. filePath (путь
-  /// на диске, недоступен на вебе) предпочтительнее: MultipartFile.fromPath
-  /// читает файл ПОТОКОВО прямо во время отправки, не загружая его
-  /// целиком в память заранее. Раньше единственный вариант - bytes -
-  /// требовал прочитать весь файл (для звука это могло быть до 20 МБ,
-  /// см. лимит бэкенда) в память ДО начала отправки, да ещё раз
-  /// скопировать его при multipart-кодировании запроса.
+  /// bytes ИЛИ filePath
   Future<SoundAsset> upload({
     required String baseUrl,
     required String token,
@@ -98,11 +92,7 @@ class SoundsService {
     }
   }
 
-  /// Скачивает сами байты для проигрывания — тот же приём, что уже
-  /// используется для предпрослушивания голоса (admin_voice_screen.dart):
-  /// эндпоинт требует авторизации, а AudioPlayer (UrlSource) не умеет
-  /// передавать свои заголовки, поэтому скачиваем целиком и играем через
-  /// BytesSource, не через прямую ссылку.
+  /// Скачивает сами байты для проигрывания
   Future<Uint8List> fetchAudioBytes({required String baseUrl, required String token, required int soundId}) async {
     final res = await _client
         .get(Uri.parse('$baseUrl/api/sounds/$soundId/file'), headers: {'Authorization': 'Bearer $token'})

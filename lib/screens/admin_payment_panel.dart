@@ -7,10 +7,7 @@ import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/glass_panel.dart';
 
-/// Оплата и реклама. Ключи ЮMoney/Альфа-Банка/Stripe задаются только в
-/// .env на сервере - здесь их статус (подключено ли, чего не хватает, какие
-/// адреса вписать в кабинетах) и проверки. AdMob (id рекламного блока, не
-/// секрет) по-прежнему настраивается тут.
+/// Оплата и реклама.
 class AdminPaymentPanel extends StatefulWidget {
   final AuthStore authStore;
   const AdminPaymentPanel({super.key, required this.authStore});

@@ -70,10 +70,8 @@ class _AdminPronunciationScreenState extends State<AdminPronunciationScreen> {
     }
   }
 
-  // сохраняет слово и сразу проигрывает ЕГО ПРОИЗНОШЕНИЕ так, как оно
-  // прозвучит в реальном разговоре — синтез идёт через тот же
-  // /api/tts/synthesize, что и обычная озвучка ответов, честно показывает
-  // результат, а не просто "текст сохранён"
+  // сохраняет слово и сразу проигрывает ЕГО ПРОИЗНОШЕНИЕ так, как оно прозвучит
+  // в реальном разговоре
   Future<void> _addAndPreview() async {
     final token = widget.authStore.token;
     final word = _wordController.text.trim();

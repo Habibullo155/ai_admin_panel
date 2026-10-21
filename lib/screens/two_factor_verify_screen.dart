@@ -5,11 +5,9 @@ import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
-/// Второй шаг входа, когда у аккаунта включена 2FA - AuthStore уже
-/// перешёл в AuthStatus.twoFactorRequired (email+пароль приняты,
-/// pendingTwoFactorToken ждёт кода). Показывается вместо AuthScreen,
-/// см. app.dart::_buildHome. Особенно важно для admin - украденный
-/// admin-токен опаснее обычного, см. two_factor.py на бэкенде.
+/// Второй шаг входа, когда у аккаунта включена 2FA - AuthStore уже перешёл в
+/// AuthStatus.twoFactorRequired (email+пароль приняты, pendingTwoFactorToken
+/// ждёт кода).
 class TwoFactorVerifyScreen extends StatefulWidget {
   final AuthStore store;
   const TwoFactorVerifyScreen({super.key, required this.store});

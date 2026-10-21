@@ -7,11 +7,7 @@ import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
-/// null testId - создание нового теста, иначе - редактирование
-/// существующего. В отличие от блога здесь нет отдельных контроллеров на
-/// каждое текстовое поле заранее - вопросы/варианты/диапазоны добавляются
-/// и убираются динамически, так что контроллеры создаются и освобождаются
-/// вместе с самими элементами списков.
+/// null testId - создание нового теста, иначе - редактирование существующего.
 class AdminCustomTestEditorScreen extends StatefulWidget {
   final AuthStore authStore;
   final int? testId;

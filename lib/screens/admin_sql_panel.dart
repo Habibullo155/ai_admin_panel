@@ -8,11 +8,8 @@ import '../theme/app_text_color.dart';
 import '../widgets/export_buttons.dart';
 import '../widgets/glass_panel.dart';
 
-/// Полноценный SQL-запросчик - выполняет любой SQL как есть, без
-/// ограничения на чтение. Мощный инструмент для отладки, но одним
-/// неверным запросом можно необратимо повредить данные - отсюда
-/// заметное предупреждение вверху и подтверждение перед запросами,
-/// похожими на изменение данных (INSERT/UPDATE/DELETE и т.п.).
+/// Полноценный SQL-запросчик - выполняет любой SQL как есть, без ограничения на
+/// чтение.
 class AdminSqlPanel extends StatefulWidget {
   final AuthStore authStore;
   const AdminSqlPanel({super.key, required this.authStore});

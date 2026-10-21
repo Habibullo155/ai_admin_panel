@@ -7,11 +7,8 @@ import '../widgets/glass_panel.dart';
 
 enum _Stage { enterEmail, checkEmailSent, enterCodeAndPassword, done }
 
-/// Восстановление пароля в один заход: сначала email, потом (после того
-/// как код "отправлен" - реально уходит только если на сервере настроен
-/// SMTP, см. backend/email_service.py) код + новый пароль на этом же
-/// экране, без перехода куда-то ещё по ссылке из письма - проще для
-/// мобильного приложения, чем полагаться на deep link.
+/// Восстановление пароля в один заход: сначала email, потом (после того как код
+/// "отправлен"
 class ForgotPasswordScreen extends StatefulWidget {
   final AuthStore store;
   const ForgotPasswordScreen({super.key, required this.store});

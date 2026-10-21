@@ -7,9 +7,7 @@ import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
 /// Имя ассистента и дополнительные инструкции ("о чём и как ему отвечать") —
-/// admin-only, влияет на все разговоры сразу. Намеренно НЕ может отключить
-/// или заменить встроенные правила безопасности (см. main.py) — это
-/// добавка поверх обычного тона, не замена защиты.
+/// admin-only, влияет на все разговоры сразу.
 class AdminAiScreen extends StatefulWidget {
   final AuthStore authStore;
   final VoidCallback? onBack;

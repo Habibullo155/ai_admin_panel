@@ -72,11 +72,8 @@ class _AdminDocumentsScreenState extends State<AdminDocumentsScreen> {
 
   Future<void> _pickAndUpload() async {
     // file_picker v12: FilePicker.pickFile() - раньше был
-    // FilePicker.platform.pickFiles(...) с result.files.single и
-    // withData: true. Теперь сразу PlatformFile? (не список), сами байты
-    // читаются отдельным async-вызовом file.readAsBytes() - раньше это
-    // было полем file.bytes (могло быть null), теперь при ошибке чтения
-    // readAsBytes() бросает исключение, а не возвращает null
+    // FilePicker.platform.pickFiles(...) с result.files.single и withData:
+    // true.
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       // формат сервер определяет по содержимому (book_extract.py)

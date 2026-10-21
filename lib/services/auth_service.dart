@@ -15,10 +15,8 @@ class AuthResult {
 }
 
 /// Результат /api/auth/login - либо сразу токен (2FA выключена), либо
-/// requiresTwoFactor=true с pendingToken для verifyLoginTwoFactor() -
-/// см. two_factor.py на бэкенде. Особенно актуально для admin -
-/// украденный admin-токен опаснее обычного (доступ к SQL-консоли и
-/// всем пользователям), см. комментарий в two_factor.py.
+/// requiresTwoFactor=true с pendingToken для verifyLoginTwoFactor() - см.
+/// two_factor.py на бэкенде.
 class LoginOutcome {
   final bool requiresTwoFactor;
   final AuthResult? result;
@@ -307,11 +305,8 @@ class AuthService {
     await clearToken();
   }
 
-  /// Обновляет только СВОИ поля профиля (ФИО, возраст, хобби) — не все
-  /// три обязательны разом, можно прислать одно. Передавай явный `null`
-  /// в соответствующем параметре, чтобы очистить поле, а не просто
-  /// пропускай его — пропущенный параметр здесь и так не попадёт в тело
-  /// запроса (см. ниже), так что это разделение делает сам вызывающий код.
+  /// Обновляет только СВОИ поля профиля (ФИО, возраст, хобби) — не все три
+  /// обязательны разом, можно прислать одно.
   Future<AppUser> updateProfile({
     required String baseUrl,
     required String token,
@@ -502,10 +497,7 @@ class AuthService {
     }
   }
 
-  /// Возвращает свежие данные пользователя (is_email_verified теперь true) -
-  /// вызывающий код (AuthStore) должен обновить своё поле user этим
-  /// результатом, иначе баннер "подтвердите почту" не пропадёт до
-  /// следующего перезапуска приложения.
+  /// Возвращает свежие данные пользователя (is_email_verified теперь true)
   Future<AppUser> verifyEmail({required String baseUrl, required String token}) async {
     http.Response res;
     try {
@@ -559,10 +551,6 @@ class AuthService {
   }
 
   /// FastAPI отдаёт ошибки в двух разных формах:
-  /// - {"detail": "текст"} — наши собственные HTTPException;
-  /// - {"detail": [{"msg": "...", "loc": [...]}, ...]} — автоматическая
-  ///   валидация pydantic (например, слишком короткий пароль). Без этой
-  ///   проверки код упал бы на приведении List к String.
   String _extractErrorMessage(Map<String, dynamic> data) {
     final detail = data['detail'];
     if (detail is String) return detail;

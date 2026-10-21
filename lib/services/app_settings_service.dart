@@ -118,10 +118,7 @@ class ModelSettings {
 class AppSettingsService {
   final http.Client _client = createHttpClient();
 
-  /// Если сервер недоступен — не блокируем голосовые функции ими: базовый
-  /// голос на устройстве работает независимо от бэкенда, а облачную
-  /// озвучку в этом случае просто считаем недоступной (она физически не
-  /// может работать без сервера — это не то же самое, что "выключена").
+  /// Если сервер недоступен
   Future<PublicAppSettings> getPublicSettings(String baseUrl) async {
     try {
       final res = await _client

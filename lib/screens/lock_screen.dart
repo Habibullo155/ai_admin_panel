@@ -22,10 +22,7 @@ class _LockScreenState extends State<LockScreen> {
   @override
   void initState() {
     super.initState();
-    // Предлагаем биометрию сразу, не дожидаясь тапа — так быстрее для
-    // обычного случая (совпало с Face ID с первого раза), а кнопка ниже
-    // остаётся на случай, если авто-попытка не сработала (например,
-    // пользователь просто ещё не поднёс палец к сканеру).
+    // Предлагаем биометрию сразу, не дожидаясь тапа
     WidgetsBinding.instance.addPostFrameCallback((_) => _unlock());
   }
 

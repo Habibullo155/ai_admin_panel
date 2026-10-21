@@ -13,10 +13,8 @@ import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
 /// Загрузка звуков для трёх мест в приложении: эффект при "сжечь/разбить"
-/// тяжёлую мысль (release), белый шум во время диалога (white_noise),
-/// музыка для сна (sleep_music). Реальные аудиофайлы должен загрузить
-/// админ сам — здесь только управление ими, готовых звуков в комплекте
-/// нет (не то, что можно правдоподобно сгенерировать самому).
+/// тяжёлую мысль (release), белый шум во время диалога (white_noise), музыка
+/// для сна (sleep_music).
 class AdminSoundsScreen extends StatefulWidget {
   final AuthStore authStore;
   final VoidCallback? onBack;
@@ -77,21 +75,15 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
       return;
     }
     // file_picker v12: FilePicker.pickFile() - раньше был
-    // FilePicker.platform.pickFiles(...) с result.files.single и
-    // withData: true. Теперь сразу PlatformFile? (не список), сами байты
-    // читаются отдельным async-вызовом file.readAsBytes() - раньше это
-    // было полем file.bytes (могло быть null), теперь при ошибке чтения
-    // readAsBytes() бросает исключение, а не возвращает null
+    // FilePicker.platform.pickFiles(...) с result.files.single и withData:
+    // true.
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['mp3', 'wav'],
     );
     if (file == null) return;
-    // на вебе file.path всегда null (доступ к файлу только через байты -
-    // так работает File API браузера) - там читаем байты как раньше.
-    // На мобильных/десктопе путь есть - используем его напрямую в
-    // upload() без предварительного readAsBytes() здесь вообще, чтобы
-    // не грузить файл в память дважды до того, как он вообще нужен
+    // на вебе file.path всегда null (доступ к файлу только через байты - так
+    // работает File API браузера) - там читаем байты как раньше.
     Uint8List? bytes;
     if (kIsWeb || file.path == null) {
       try {
@@ -123,11 +115,7 @@ class _AdminSoundsScreenState extends State<AdminSoundsScreen> {
     } on SoundsException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      // сетевой сбой (обрыв соединения, таймаут) - НЕ SoundsException
-      // (тот кидается только на явный HTTP-код ошибки от сервера), без
-      // этого перехвата ушло бы необработанным исключением наверх, и
-      // человек увидел бы общий экран ошибки вместо понятного "не
-      // получилось загрузить, проверь соединение"
+      // сетевой сбой (обрыв соединения, таймаут)
       if (mounted) setState(() => _error = 'Не удалось загрузить файл — проверь соединение с сервером.');
     } finally {
       if (mounted) setState(() => _isUploading = false);

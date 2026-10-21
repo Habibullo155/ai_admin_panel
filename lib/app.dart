@@ -8,16 +8,7 @@ import 'state/auth_store.dart';
 import 'state/theme_store.dart';
 
 /// Точка входа админ-приложения - НЕ содержит чат/голос/упражнения вообще,
-/// сразу после входа ведёт в AdminShellScreen. Использует тот же бэкенд
-/// (config.dart::AppConfig.backendUrl), тот же логин/пароль, что и обычное
-/// приложение - это не отдельная система авторизации, только отдельная
-/// сборка с другим набором экранов.
-///
-/// Локализация (AppLocalizations/l10n) сознательно убрана из этого
-/// приложения целиком - переводы админке пока не нужны, весь текст на
-/// русском напрямую в коде. Если понадобится позже - см. flutter_app для
-/// образца (LocaleStore/LocaleService, l10n.yaml, generate: true в
-/// pubspec.yaml, lib/l10n/*.arb).
+/// сразу после входа ведёт в AdminShellScreen.
 class AdminApp extends StatefulWidget {
   const AdminApp({super.key});
 
@@ -93,8 +84,6 @@ class _AdminAppState extends State<AdminApp> {
         // проверка роли здесь, не только на бэкенде - обычный пользователь,
         // случайно (или намеренно) открывший это отдельное приложение, не
         // должен видеть даже пустой экран админки, только явный отказ.
-        // Сами данные всё равно защищены на бэкенде (get_current_admin),
-        // это дополнительный, а не единственный слой
         if (user == null || !user.isAdmin) {
           return _NotAdminScreen(onLogout: _authStore.logout);
         }

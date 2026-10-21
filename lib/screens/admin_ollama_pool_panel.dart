@@ -8,14 +8,8 @@ import '../state/auth_store.dart';
 import '../theme/app_text_color.dart';
 import '../widgets/glass_panel.dart';
 
-/// Пул серверов моделей (OpenAI-совместимый API - vLLM) для
-/// распределения нагрузки генерации ответов. Документы (их эмбеддинги)
-/// синхронизировать никуда не нужно - они живут в общей базе данных,
-/// доступны с любого сервера. В отличие от Ollama - установить модель на
-/// сервер бэкенд не может, только проверить, что нужная модель там уже
-/// загружена (флаг --model при запуске самого vLLM) - проверка идёт в
-/// фоне на бэкенде сразу после добавления, здесь просто опрашиваем
-/// статус, пока он не станет окончательным.
+/// Пул серверов моделей (OpenAI-совместимый API - vLLM) для распределения
+/// нагрузки генерации ответов.
 class AdminOllamaPoolPanel extends StatefulWidget {
   final AuthStore authStore;
   const AdminOllamaPoolPanel({super.key, required this.authStore});
@@ -124,11 +118,7 @@ class _AdminOllamaPoolPanelState extends State<AdminOllamaPoolPanel> {
                 decoration: const InputDecoration(labelText: 'Адрес', hintText: 'http://192.168.1.10:11434'),
               ),
               const SizedBox(height: 16),
-              // base/pro - два независимых пула на бэкенде (см. .env
-              // OLLAMA_MODEL/OLLAMA_PRO_MODEL), сервер сверяется именно
-              // с моделью своего уровня, не общим списком - выбрать
-              // неверно значит получить "Несовпадение модели" сразу
-              // после добавления, а не что-то незаметно поломать
+              // base/pro
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Уровень модели', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12.5)),

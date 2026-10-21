@@ -16,14 +16,7 @@ import '../theme/app_text_color.dart';
 import '../widgets/app_background.dart';
 import '../widgets/glass_panel.dart';
 
-// экран переписки внутри сессии живой помощи, общий для юзера и
-// оператора - кто есть кто определяется по currentUserId
-//
-// обновление по опросу (polling), не WebSocket - в проекте нет
-// инфраструктуры для постоянного соединения (SSE только для стриминга
-// ответов ИИ, другой протокол), добавлять WebSocket ради одной фичи -
-// намного больше работы. Опрос раз в несколько секунд даёт приемлемую
-// задержку, не мгновенную
+// экран переписки внутри сессии живой помощи, общий для юзера и оператора
 class HelpSessionChatScreen extends StatefulWidget {
   final AuthStore authStore;
   final HelpSession session;
@@ -41,11 +34,7 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
   List<HelpMessage> _messages = [];
   late HelpSession _session;
   bool _isLoading = true;
-  // защита от наслаивающихся запросов - при медленной сети (запрос
-  // дольше 4с - интервала поллинга) Timer.periodic раньше запускал
-  // ещё один _load() поверх ещё не завершившегося, и так на каждый
-  // тик - лавина параллельных запросов, растущая без остановки, пока
-  // сеть не отпустит хотя бы один из них
+  // защита от наслаивающихся запросов
   bool _requestInFlight = false;
   bool _isSending = false;
   final _picker = ImagePicker();
@@ -238,10 +227,8 @@ class _HelpSessionChatScreenState extends State<HelpSessionChatScreen> {
     }
   }
 
-  // собирает последний результат каждого из трёх опросников (если он
-  // вообще проходился) и даёт выбрать, какой отправить оператору —
-  // отдельным сообщением в этой же (уже приватной) переписке, не через
-  // новый канал. Ничего не отправляется без явного тапа пользователя.
+  // собирает последний результат каждого из трёх опросников (если он вообще
+  // проходился) и даёт выбрать, какой отправить оператору
   Future<void> _shareTestResults() async {
     final userId = widget.authStore.user?.id.toString() ?? '';
     final who5 = (await WellbeingService().loadCheckins(userId));

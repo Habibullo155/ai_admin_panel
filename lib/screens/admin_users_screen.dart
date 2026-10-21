@@ -10,10 +10,8 @@ import '../widgets/glass_panel.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   final AuthStore authStore;
-  // null (по умолчанию) - экран открыт отдельным маршрутом, кнопка
-  // "назад" делает обычный pop(). Задан - экран встроен содержимым в
-  // AdminShellScreen, кнопка "назад" должна вернуть на раздел "Обзор"
-  // внутри той же оболочки, а не вытолкнуть из всей админки через pop()
+  // null (по умолчанию) - экран открыт отдельным маршрутом, кнопка "назад"
+  // делает обычный pop().
   final VoidCallback? onBack;
   const AdminUsersScreen({super.key, required this.authStore, this.onBack});
 
